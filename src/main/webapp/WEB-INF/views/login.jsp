@@ -38,7 +38,7 @@
 				<div class="bg-login-image js-tilt" data-tilt>
 					<img src="/resources/img/img-01.png" alt="IMG">
 				</div>
-				<form class="user" name="loginForm" method="post" action="/board">
+				<form class="user" name="loginForm" method="get" action="/board">
 					<div class="text-center">
 						<h2>로그인</h2>
 					</div>
@@ -59,7 +59,7 @@
 								for="customCheck">Remember Me</label>
 						</div>
 					</div>
-					<button class="btn btn-primary btn-user btn-block">Login</button>
+					<button class="btn btn-primary btn-user btn-block" type="submit">Login</button>
 					<hr>
 					
 					<div class="text-center">
