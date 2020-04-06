@@ -17,7 +17,7 @@
 
 		<!-- Nav Item - Dashboard -->
 		<li class="nav-item">
-			<a class="nav-link" href="/board"> 
+			<a class="nav-link" href="/board.do"> 
 				<i class="fa fa-fw fa-list"></i> <span>게시판</span>
 			</a>
 		</li>

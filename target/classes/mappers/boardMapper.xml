@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+
+	<!-- <select id="boardList" resultType="com.giens.springboard.vo.BoardVO"> -->
+	<select id="boardList" parameterType="String" resultType="com.giens.springboard.vo.BoardVO">
+		SELECT @ROWNUM:=@ROWNUM-1 as ROWNUM
+			  , B.TITLE
+		      , B.CONTENTS
+		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d') as REG_DATE
+		      , B.USER_ID
+		      , B.BOARD_NO
+		      , B.ORIGIN_NO
+		      , B.GROUP_LAYER
+		      , B.GROUP_SEQ
+		      , B.P_BOARD_NO
+		      , B.GROUP_PATH
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLT_CNT
+		FROM board B, (SELECT @ROWNUM := (SELECT COUNT(0) FROM board)+1) TMP
+		WHERE 1=1
+			<include refid="searchOption"></include>
+  		ORDER BY B.ORIGIN_NO DESC
+	</select>
+	
+	<sql id="searchOption">
+		<if test="searchType != null">
+			<if test="searchType == title">AND B.TITLE LIKE '%'||#{keyword}||'%'</if>
+			<if test="searchType == userID">AND B.USER_ID LIKE '%'||#{keyword}||'%'</if>
+		</if>
+	</sql>
+	
+	<insert id="addBoard">
+		INSERT INTO board(TITLE, CONTENTS, USER_ID)
+		VALUES(#{title}, #{contents} , #{userID})
+	</insert>
+	
+	<update id="updateBoardNew">
+		UPDATE board
+		SET GROUP_PATH = CONCAT(CAST(BOARD_NO as CHAR), '-')
+		    , ORIGIN_NO = BOARD_NO
+		WHERE ORIGIN_NO = 0
+	</update>
+	
+	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
+		SELECT TB.BOARD_NO
+		      , TB.TITLE
+		      , TB.CONTENTS      
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = TB.board_no) as reply
+		FROM board TB
+		WHERE TB.BOARD_NO = #{boardNo} OR TB.P_BOARD_NO = #{boardNo} ;
+	</select>
+
+</mapper> 
+

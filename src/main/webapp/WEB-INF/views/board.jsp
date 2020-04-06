@@ -31,7 +31,6 @@
 </head>
 
 <body id="page-top">
-
 	<!-- Page Wrapper -->
 	<div id="wrapper">
 		<!-- Sidebar -->
@@ -55,15 +54,19 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">
+									<select name="searchOption" id="searchOption" class="form-control bg-light small">
+										<option value="title">제목</option>
+										<option value="userID">작성자</option>
+									</select>
 									<input type="search" class="form-control bg-light small"
 										placeholder="검색어를 입력하세요." aria-label="Search">
 									<div class="input-group-append">
-										<a class="btn btn-primary" href="#">
+										<a class="btn btn-primary" href="/">
 											<i class="fas fa-search fa-sm"></i>
 										</a>
 									</div>
 									
-									<a class="btn btn-primary mr-0 ml-auto" href="/write">
+									<a class="btn btn-primary mr-0 ml-auto" href="/writeView.do">
 										<i class="fa fa-edit"></i>&nbsp;글쓰기
 									</a>
 								</div>
@@ -75,7 +78,8 @@
 					</div>
 				</div>
 				<!-- End of Toast UI grid-->
-
+				
+				
 			</div>
 			<!-- End of Main Content -->
 
@@ -113,73 +117,130 @@
 	<script src="/resources/js/tui-pagination.js"></script>
 	<!--  -->
 	<script src="/resources/js/tui-grid.js"></script>
-	<script src="/resources/js/data/basic-dummy.js"></script>
-
+	
 	<!-- Page level custom scripts -->
-	<script type="text/javascript">
-		var grid = new tui.Grid({
-			el : document.getElementById('grid'),
-			data : gridData,
-			scrollX : false,
-			scrollY : false,
-			columns : [ {
-				header : 'Name',
-				name : 'name',
-				sortable : true
-			}, {
-				header : 'Artist',
-				name : 'artist',
-				sortable : true
-			}, {
-				header : 'Type',
-				name : 'type',
-				sortable : true
-			}, {
-				header : 'Release',
-				name : 'release',
-				sortable : true
-			}, {
-				header : 'Genre',
-				name : 'genre',
-				sortable : true
-			} ],
-
-			rowHeaders : [ 'rowNum' ],
-			pageOptions : {
-				useClient : true,
-				perPage : 20
+	<script>	
+		/************************************************** class showDetail -> 제목 컬럼에 a tag 추가 */
+		class ShowDetail {
+			constructor(props){
+				this.props = props;
+				const aTag = document.createElement('a');
+				let title = props.value;
+								
+				aTag.innerHTML = title;
+				aTag.href = "#";
+				aTag.className = "boardTitle";
+				aTag.style = "margin-left: 10px";
+				
+				this.aTag = aTag;
+				this.render(props);
 			}
-		});
+			
+			getElement(){
+				return this.aTag;
+			}
+			
+			render(props){
+				this.aTag.title = String(props.value);
+			}
+		}
 		
+		/************************************************** grid 디자인 */
 		tui.Grid.applyTheme('default', {
-			outline: {
-				border: '#C0C0C0',
-				showVerticalBorder: true
+			outline : {
+				border : '#C0C0C0',
+				showVerticalBorder : true
 			},
-			cell: {
-				normal: {
-					background: '#FFF',
-					border: '#C0C0C0',
-					showVerticalBorder: true,
-					showHorizontalBorder: true,
-					text: '#000'
+			cell : {
+				normal : {
+					background : '#FFF',
+					border : '#C0C0C0',
+					showVerticalBorder : true,
+					showHorizontalBorder : true,
+					text : '#000'
 				},
-				header: {
-					background: '#E0E0E0',
-					border: '#A0A0A0',
-					showVerticalBorder: true,
-					showHorizontalBorder: true
+				header : {
+					background : '#E0E0E0',
+					border : '#A0A0A0',
+					showVerticalBorder : true,
+					showHorizontalBorder : true
 				},
-				rowHeader:{
-					background: '#E0E0E0',
-					border: '#A0A0A0',
-					showVerticalBorder: true,
-					showHorizontalBorder: true
+				rowHeader : {
+					background : '#E0E0E0',
+					border : '#A0A0A0',
+					showVerticalBorder : true,
+					showHorizontalBorder : true
 				}
 			}
 		});
 		
+		/************************************************** grid 양식 */	
+		var grid = new tui.Grid({
+			el : document.getElementById('grid'),
+			scrollX : false,
+			scrollY : false,
+			columns : [ {
+				header : 'No.',
+				name : 'rowNo',
+				width : '50',
+				minWidth : '30',
+				align : 'center'
+			}, {				
+				header : '제목',
+				name : 'title',			
+				sortable : true,
+				renderer : {
+					type: ShowDetail
+				}
+			}, {
+				header : '작성자',
+				name : 'userID',
+				width: '130',
+				align : 'center',
+				sortable : true
+			}, {
+				header : '작성일',
+				name : 'regDate',
+				width: '130',
+				align : 'center',
+				sortable : true
+			}, {
+				name : 'boardNo',
+				width : '0',
+				minWidth : '0'
+			}],
+			 
+			pageOptions : {
+				useClient : true,
+				perPage : 10
+			}
+		}); 
 		
+		/************************************************** grid 데이터 */		
+		window.onload = function() {
+			$.ajax({
+				url : "/ajax/toastBoardList.do",
+				method : "POST",
+				dataType : "json",
+				success : function(result) {
+					grid.resetData(result);					
+				},
+				error : function(xhr, status, error){
+					console.log("code: "+xhr.status);
+					console.log("message: "+xhr.responseText);
+					console.log("error: "+error);
+				}
+			});
+		};
+		
+		/************************************************** Custom */	
+		grid.on('click', function(ev){
+			if(ev.columnName=='title'){
+				var boardNo = grid.getValue(ev.rowKey, 'boardNo');
+				//console.log("grid.on : "+boardNo);
+				location.href = '/boardDetail.do?boardNo='+boardNo;
+			}
+		});
 	</script>
 
 </body>
