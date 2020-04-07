@@ -35,7 +35,7 @@
 			<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
 				data-parent="#accordionSidebar">
 				<div class="bg-white py-2 collapse-inner rounded">
-					<a class="collapse-item" href="#">
+					<a class="collapse-item" href="/user.do">
 						<i class="fa fa-users-cog fa-fw"></i>&nbsp; 사용자 관리
 					</a> 
 					<a class="collapse-item" href="#">

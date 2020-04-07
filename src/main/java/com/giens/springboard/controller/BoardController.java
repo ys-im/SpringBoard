@@ -52,4 +52,11 @@ public class BoardController {
 		return "boardDetail";
 	}
 	
+	@RequestMapping(value="/editView.do")
+	public String editView(int boardNo) throws Exception {
+		logger.info("edit board");
+		
+		return "edit";
+	}
+	
 }

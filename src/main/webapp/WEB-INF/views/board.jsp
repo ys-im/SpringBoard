@@ -54,7 +54,7 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">
-									<select name="searchOption" id="searchOption" class="form-control bg-light small">
+									<select name="searchOption" id="searchOption" class="form-control bg-light small mr-1">
 										<option value="title">제목</option>
 										<option value="userID">작성자</option>
 									</select>
@@ -88,7 +88,6 @@
 			<!-- End of Footer -->
 
 		</div>
-
 		<!-- End of Content Wrapper -->
 
 	</div>

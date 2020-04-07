@@ -38,7 +38,7 @@ public class BoardDAOImpl implements BoardDAO{
 
 	@Override
 	public List<BoardVO> getBoard(int boardNo) throws Exception {
-		return sqlSession.selectList("boardMapper.boardDetail");
+		return sqlSession.selectList("boardMapper.boardDetail", boardNo);
 	}
 
 }

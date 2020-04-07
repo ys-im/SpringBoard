@@ -17,7 +17,7 @@
 		      , B.GROUP_SEQ
 		      , B.P_BOARD_NO
 		      , B.GROUP_PATH
-		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLT_CNT
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
 		FROM board B, (SELECT @ROWNUM := (SELECT COUNT(0) FROM board)+1) TMP
 		WHERE 1=1
 			<include refid="searchOption"></include>
@@ -44,12 +44,20 @@
 	</update>
 	
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
-		SELECT TB.BOARD_NO
-		      , TB.TITLE
-		      , TB.CONTENTS      
-		      , (SELECT COUNT(0) FROM board WHERE p_board_no = TB.board_no) as reply
-		FROM board TB
-		WHERE TB.BOARD_NO = #{boardNo} OR TB.P_BOARD_NO = #{boardNo} ;
+		SELECT @ROWNUM:=@ROWNUM-1 as rowNo
+			  , B.TITLE 
+		      , B.CONTENTS
+		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+		      , B.USER_ID
+		      , B.BOARD_NO 
+		      , B.ORIGIN_NO
+		      , B.GROUP_LAYER 
+		      , B.GROUP_SEQ 
+		      , B.P_BOARD_NO 
+		      , B.GROUP_PATH 
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
+		FROM board B, (SELECT @ROWNUM := (SELECT COUNT(0) FROM board)+1) TMP
+		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
 	</select>
 
 </mapper> 

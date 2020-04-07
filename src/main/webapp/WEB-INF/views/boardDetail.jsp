@@ -42,14 +42,40 @@
 					<div class="card shadow mb-4">
 						<div class="card-body">
 							<div class="table-responsive">
-								
-								<!-- Toast UI viewer Start -->
-								<div id="viewer">
+								<div class="form-inline mr-auto w-100 navbar-search mb-2">								
+									<a class="btn btn-primary mr-2" href="/editView.do"> 
+										<i class="fa fa-wrench"></i>&nbsp;수정
+									</a>							
+									<a class="btn btn-primary" href="#"> 
+										<i class="fa fa-trash-alt"></i>&nbsp;삭제
+									</a>
+									<a class="btn btn-primary mr-0 ml-auto" href="#" id="write"> 
+										<i class="fa fa-pen"></i>&nbsp;답글 작성
+									</a>
 								</div>
-								<!-- End of Toast UI viewer-->
-								
+								<hr class="mb-1"/>
+								<div class="form-inline mr-auto w-100 mb-2">
+									<strong class="ml-2" id="title"></strong>
+									<a class="mr-0 ml-auto" id="regDate"></a>
+								</div>	
+								<div class="form-inline mr-auto w-100 mb-2">
+									<a class="mr-0 ml-auto" id="userName"></a>
+								</div>
+								<!-- Toast UI viewer Start -->
+								<div id="viewer" class="form-control border-bottom-primary mb-2">
+								</div>	
+								<!-- End of Toast UI viewer-->								
 							</div>
-						</div>
+							
+							<hr class="mb-1"/>
+							<div class="table-responsive">
+								<div id="replyArea" class="mr-4 ml-4">
+									<strong>답글</strong> 
+									<div id="replyList">
+									</div>
+								</div>
+							</div>
+						</div>						
 					</div>					
 				</div>
 			</div>
@@ -83,19 +109,12 @@
 	<!-- Custom scripts for all pages-->
 	<script src="/resources/js/sb-admin-2.min.js"></script>
 	
-	<script src="/resources/js/md-default.js"></script>
+	<!-- <script src="/resources/js/md-default.js"></script> -->
 	
 	<!-- Viewer -->
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
-	<script >    
-		var viewer = new toastui.Editor({
-			el : document.querySelector('#viewer'),
-			viewer: true,
-			height : '500px',
-			initialValue : content
-		});
-		
+	<script >   
 		/************************************************** viewer 데이터 */		
 		window.onload = function() {
 			var boardNo = getParameterByName("boardNo");
@@ -107,7 +126,38 @@
 				data : data,
 				dataType : "json",
 				success : function(result) {
-					console.log(result);				
+					var title = result[0].title;
+					var contents = result[0].contents;
+					var regDate = result[0].regDate;
+					for(var i in result){						
+						if(i > 0){
+							var str='<div class="form-control w-100 mb-1" id="reply_'+i+'">'
+									+'<div class="form-inline">';
+							var replyCnt = result[i].replyCnt;
+							var boardNo = result[i].boardNo;
+							if(replyCnt > 0){
+								str += '<a href="#" onclick="fnc_replyClick('+boardNo+');" id="replyTitle_'+boardNo+'"><b>'+result[i].title+'</b></a>'
+										+'&nbsp&nbsp<b>['+replyCnt+']</b>';
+							}else{
+								str += '<b id="replyTitle_'+boardNo+'">'+result[i].title+'</b>';
+							}
+							str += '</div><hr>'
+									+result[i].contents
+									+'</div>';
+							$("#replyList").append(str);
+						}			
+					}
+					$("#title").html(title);
+					$("#regDate").html(regDate);
+					$("#userName").html("작성자");
+					
+					/*************************************************************** viewwer  */
+					var viewer = new toastui.Editor({
+						el : document.querySelector('#viewer'),
+						viewer: true,
+						height : '500px',
+						initialValue : contents
+					});
 				},
 				error : function(xhr, status, error){
 					console.log(error);
@@ -115,13 +165,16 @@
 			});
 		};
 		
-
 		/************************************************** function parameter값 받기  */		
 		function getParameterByName(name) {
 		    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 		    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 		        results = regex.exec(location.search);
 		    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+		
+		function fnc_replyClick(num){
+			location.href='/boardDetail.do?boardNo='+num;
 		}
 		
 	</script>

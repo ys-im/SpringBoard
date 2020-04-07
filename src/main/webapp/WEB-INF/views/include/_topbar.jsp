@@ -15,7 +15,7 @@
 	<form
 		class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
 		<div class="input-group">
-			<span class="h2 my-4 mb-2 text-gray-800">게시판</span>
+			<span class="h2 my-4 mb-2 text-gray-800">Spring Board</span>
 		</div>
 	</form>
 

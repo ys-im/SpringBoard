@@ -35,8 +35,9 @@ public class AjaxController {
 	@RequestMapping("/toastBoardDetail.do")
 	public List<BoardVO> ajaxBoardDetail(int boardNo) throws Exception {
 		logger.info("board detail");
+		
 		List<BoardVO> boardDetail = boardService.getBoard(boardNo);
-		System.out.println(boardDetail);
+						
 		return  boardDetail;
 	}
 }
