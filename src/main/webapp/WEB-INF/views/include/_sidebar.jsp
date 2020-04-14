@@ -38,7 +38,7 @@
 					<a class="collapse-item" href="/user.do">
 						<i class="fa fa-users-cog fa-fw"></i>&nbsp; 사용자 관리
 					</a> 
-					<a class="collapse-item" href="#">
+					<a class="collapse-item" href="/loginHistory.do">
 						<i class="fa fa-user-clock"></i>&nbsp; 로그인 이력
 					</a>
 				</div>

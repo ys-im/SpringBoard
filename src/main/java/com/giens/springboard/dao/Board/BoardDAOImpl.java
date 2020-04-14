@@ -2,11 +2,13 @@ package com.giens.springboard.dao.Board;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.giens.springboard.vo.BoardVO;
 
@@ -22,15 +24,15 @@ public class BoardDAOImpl implements BoardDAO{
 	}
 
 	@Override
-	public void addBoard(String title, String userID, String contents, int pBoardNo) throws Exception {		
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("title", title);
-		params.put("userID", userID);
-		params.put("contents", contents);
-		params.put("pBoardNo", pBoardNo);
+	public void addBoard(Map<String, Object> params) throws Exception {		
 		sqlSession.insert("boardMapper.addBoard", params);
 	}
 
+	@Override
+	public void addBoardFile(Map<String, Object> params) throws Exception {
+		sqlSession.insert("boardMapper.addBoardFile", params);		
+	}
+	
 	@Override
 	public void updateBoardNew() throws Exception {
 		sqlSession.update("boardMapper.updateBoardNew");

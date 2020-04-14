@@ -137,14 +137,21 @@
 							var boardNo = result[i].boardNo;
 							if(replyCnt > 0){
 								str += '<a href="#" onclick="fnc_replyClick('+boardNo+');" id="replyTitle_'+boardNo+'"><b>'+result[i].title+'</b></a>'
-										+'&nbsp&nbsp<b>['+replyCnt+']</b>';
+										+'&nbsp&nbsp<b>['+replyCnt+']</b>';									
 							}else{
 								str += '<b id="replyTitle_'+boardNo+'">'+result[i].title+'</b>';
 							}
-							str += '</div><hr>'
-									+result[i].contents
+							str += '<a class="mr-0 ml-auto">'+result[i].userID+'&nbsp&nbsp'+result[i].regDate+'</a>'
+									+'</div><hr>'
+									+'<div id="viewer_'+boardNo+'">'+result[i].contents+'</div>'
 									+'</div>';
 							$("#replyList").append(str);
+							
+							var vw = new toastui.Editor({
+								el : document.querySelector("#viewer_"+boardNo),
+								viewer: true,
+								initialValue: result[i].contents
+							});
 						}			
 					}
 					$("#title").html(title);
@@ -155,7 +162,7 @@
 					var viewer = new toastui.Editor({
 						el : document.querySelector('#viewer'),
 						viewer: true,
-						height : '500px',
+						minHeight : '500px',
 						initialValue : contents
 					});
 				},

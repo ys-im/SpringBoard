@@ -66,7 +66,7 @@
 										</a>
 									</div>
 									
-									<a class="btn btn-primary mr-0 ml-auto" href="/writeView.do">
+									<a class="btn btn-primary mr-0 ml-auto" href="/writeView.do?pBoardNo=0">
 										<i class="fa fa-edit"></i>&nbsp;글쓰기
 									</a>
 								</div>
@@ -211,7 +211,7 @@
 			 
 			pageOptions : {
 				useClient : true,
-				perPage : 10
+				perPage : 20
 			}
 		}); 
 		

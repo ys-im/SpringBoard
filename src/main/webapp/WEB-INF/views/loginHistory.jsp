@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!doctype html>
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
-
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +10,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<title>사용자 관리</title>
+<title>로그인/로그아웃 내역</title>
 
 <!-- Custom fonts for this template -->
 <link href="/resources/vendor/fontawesome-free/css/all.min.css"
@@ -54,15 +53,16 @@
 				<!-- End of Topbar -->
 
 				<div class="container-fluid">
-					<h1 class="h4 mb-2 text-gray-800">사용자 리스트</h1>
+					<h1 class="h4 mb-2 text-gray-800">로그인 / 로그아웃 내역</h1>
 					<div class="card shadow mb-4">
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">
-									<select name="searchOption" id="searchOption" class="form-control bg-light small mr-1">
+									<!-- <select name="searchOption" id="searchOption" class="form-control bg-light small mr-1">
 										<option value="userID">아이디</option>
 										<option value="userName">이름</option>
-									</select>
+									</select> -->
+									<div class="mr-3">아이디 : </div>
 									<input type="search" class="form-control bg-light small"
 										placeholder="검색어를 입력하세요." aria-label="Search">
 									<div class="input-group-append">
@@ -70,10 +70,6 @@
 											<i class="fas fa-search fa-sm"></i>
 										</a>
 									</div>
-									
-									<a class="btn btn-primary mr-0 ml-auto" href="#"> 
-										<i class="fa fa-plus"></i>&nbsp;사용자 등록
-									</a>
 								</div>
 								
 								<!-- Toast UI grid Start -->
@@ -128,11 +124,11 @@
 			constructor(props){
 				this.props = props;
 				const aTag = document.createElement('a');
-				let title = props.value;
+				let uID = props.value;
 								
-				aTag.innerHTML = title;
+				aTag.innerHTML = uID;
 				aTag.href = "#";
-				aTag.className = "boardTitle";
+				aTag.className = "uID";
 				aTag.style = "margin-left: 10px";
 				
 				this.aTag = aTag;
@@ -144,7 +140,7 @@
 			}
 			
 			render(props){
-				this.aTag.title = String(props.value);
+				this.aTag.uID = String(props.value);
 			}
 		}
 		
@@ -189,60 +185,46 @@
 				minWidth : '30',
 				align : 'center'
 			}, {				
-				header : '사용자 이름',
-				name : 'userName',
-				align : 'center',			
-				sortable : true,
-				onBeforeChange(ev) {
-		            console.log('Before change:' + ev);
-		            ev.stop();
-		          },
-		          onAfterChange(ev) {
-		            console.log('After change:' + ev);
-		          },
-		          editor: 'text',
-				renderer : {
-					type: ShowDetail
-				}
-			}, {				
 				header : '사용자 ID',
 				name : 'userID',
 				align : 'center',			
+				sortable : true,
+				renderer : {
+					type : ShowDetail
+				}
+			}, {				
+				header : '로그인 시간',
+				name : 'loginTime',
+				align : 'center',			
 				sortable : true
 			}, {				
-				header : '휴면 상태',
+				header : '로그아웃 시간',
 				align : 'center',
-				name : 'active',
-				onBeforeChange(ev) {
-		            console.log('Before change:' + ev);
-		          },
-		          onAfterChange(ev) {
-		            console.log('After change:' + ev);
-		          },
-		          formatter: 'listItemText',
-		          editor: {
-		            type: 'select',
-		            options: {
-		              listItems: [
-		                { text: 'active', value: '1' },
-		                { text: 'deactive', value: '2' }
-		              ]
-		            }
-		          }
-			}, {
-				header : '등록일',
-				name : 'regDate',
-				align : 'center',
+				name : 'logoutTime',			
 				sortable : true
+			}, {
+				header : '접속 IP',
+				name : 'ip',
+				align : 'center'
 			}],
 			
 			rowHeaders: ['checkbox'],
 			 
 			pageOptions : {
 				useClient : true,
-				perPage : 10
+				perPage : 20
 			}
 		});
+		
+		
+		/********************************************************** Custom */
+		grid.on('click', function(ev){
+			if(ev.columnName=="uesrID"){
+				var userID = grid.getValue(ev.rowKey, 'userID');
+				location.href="/loginHistory.do?userID="+userID;
+			}	
+		});
+		
 	</script>
 </body>
 </html>

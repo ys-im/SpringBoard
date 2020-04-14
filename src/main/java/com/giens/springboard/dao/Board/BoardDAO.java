@@ -1,6 +1,7 @@
 package com.giens.springboard.dao.Board;
 
 import java.util.List;
+import java.util.Map;
 
 import com.giens.springboard.vo.BoardVO;
 
@@ -10,7 +11,10 @@ public interface BoardDAO {
 	public List<BoardVO> getBoardlist() throws Exception;
 	
 	//게시글 작성
-	public void addBoard(String title, String userID, String contents, int pBoardNo) throws Exception;
+	public void addBoard(Map<String, Object> params) throws Exception;
+	
+	//게시글 첨부파일 업로드
+	public void addBoardFile(Map<String, Object> params) throws Exception;
 	
 	//원본게시글 작성 업데이트
 	public void updateBoardNew() throws Exception;

@@ -31,9 +31,13 @@
 		</if>
 	</sql>
 	
-	<insert id="addBoard">
+	<insert id="addBoard" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="boardNo">
 		INSERT INTO board(TITLE, CONTENTS, USER_ID)
-		VALUES(#{title}, #{contents} , #{userID})
+		VALUES(#{title}, #{contents} , #{userID})	
+		
+		<selectKey keyProperty="boardNo" resultType="Integer">
+        	SELECT LAST_INSERT_ID()
+    	</selectKey>	
 	</insert>
 	
 	<update id="updateBoardNew">
@@ -42,6 +46,11 @@
 		    , ORIGIN_NO = BOARD_NO
 		WHERE ORIGIN_NO = 0
 	</update>
+	
+	<insert id="addBoardFile">
+		INSERT INTO board_file(FILE_NAME, STORED_FILE_NAME, FILE_SIZE, BOARD_NO, FILE_PATH)
+		VALUES(#{FILE_NAME}, #{STORED_FILE_NAME}, #{FILE_SIZE}, #{BOARD_NO}, #{FILE_PATH})
+	</insert>
 	
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
 		SELECT @ROWNUM:=@ROWNUM-1 as rowNo

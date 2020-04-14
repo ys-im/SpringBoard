@@ -11,7 +11,7 @@
 
 .tui-editor-contents *:not(table) {
   line-height: 160%;
-  box-sizing: content-box;
+ box-sizing: content-box;
 }
 
 .tui-editor-contents i,

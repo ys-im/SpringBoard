@@ -36,7 +36,7 @@
 					class="fas fa-user fa-sm fa-fw mr-2 text-gray-800"></i> 프로필
 				</a> <a class="dropdown-item" href="#"> <i
 					class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-800"></i> 설정
-				</a> <a class="dropdown-item" href="#"> <i
+				</a> <a class="dropdown-item" href="/loginHistory.do?userID="> <i
 					class="fas fa-history fa-sm fa-fw mr-2 text-gray-800"></i> 로그기록
 				</a>
 				<div class="dropdown-divider"></div>

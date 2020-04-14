@@ -28,6 +28,7 @@
 	<context:component-scan base-package="com.giens.springboard.service"></context:component-scan>
 	<context:component-scan base-package="com.giens.springboard.dao"></context:component-scan>
 	<context:component-scan base-package="com.giens.springboard.vo"></context:component-scan>
+	<context:component-scan base-package="com.giens.springboard.util"></context:component-scan>
 	
 	
 </beans>
