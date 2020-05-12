@@ -36,7 +36,7 @@
 	<!-- Page Wrapper -->
 	<div id="wrapper">
 		<!-- Sidebar -->
-		<%@include file="include/_sidebar.jsp"%>
+		<%@include file="../include/_sidebar.jsp"%>
 		<!-- End of Sidebar -->
 
 		<!-- Content Wrapper -->
@@ -46,7 +46,7 @@
 			<div id="content">
 
 				<!-- Topbar -->
-				<%@include file="include/_topbar.jsp"%>
+				<%@include file="../include/_topbar.jsp"%>
 				<!-- End of Topbar -->
 								
 				<div class="container-fluid">
@@ -73,9 +73,6 @@
 							</div>
 							<div class="upload-btn-wrapper">
 								<input type="file" id="input_file" multiple="multiple" class="btn btn-primary" />
-								<button class="upload-btn">
-									<i class="fa fa-file"></i>&nbsp;파일 선택
-								</button>
 							</div>
 							<br />
 							
@@ -103,7 +100,7 @@
 			<!-- End of Main Content -->
 
 			<!-- Footer -->
-			<%@include file="include/_footer.jsp"%>
+			<%@include file="../include/_footer.jsp"%>
 			<!-- End of Footer -->
 
 		</div>
@@ -119,7 +116,7 @@
 	</a>
 
 	<!-- Logout Modal-->
-	<%@include file="include/_logoutModal.jsp" %>
+	<%@include file="../include/_logoutModal.jsp" %>
 
 	<!-- Bootstrap core JavaScript-->
 	<script src="/resources/vendor/jquery/jquery.min.js"></script>
@@ -307,20 +304,10 @@
 		                return;
 		            }
 		            
-		            var fileSizeKb = fileSize / 1024; // 파일 사이즈(단위 :kb)
-		            var fileSizeMb = fileSizeKb / 1024;    // 파일 사이즈(단위 :Mb)
-		            
-		            var fileSizeStr = "";
-		            if ((1024*1024) <= fileSize) {    // 파일 용량이 1메가 이상인 경우
-		                console.log("fileSizeMb="+fileSizeMb.toFixed(2));
-		                fileSizeStr = fileSizeMb.toFixed(2) + " Mb";
-		            } else if ((1024) <= fileSize) {
-		                console.log("fileSizeKb="+parseInt(fileSizeKb));
-		                fileSizeStr = parseInt(fileSizeKb) + " kb";
-		            } else {
-		                console.log("fileSize="+parseInt(fileSize));
-		                fileSizeStr = parseInt(fileSize) + " byte";
-		            }
+		          	//파일 사이즈 계산
+					var fileSizeKb = fileSize / 1024; // 파일 사이즈(단위 :kb)
+            		var fileSizeMb = fileSizeKb / 1024;    // 파일 사이즈(단위 :Mb)
+		            var fileSizeStr = getFileSize(fileSize, fileSizeKb, fileSizeMb);
 
 		            /*
 					 * if ($.inArray(ext, [ 'exe', 'bat', 'sh', 'java', 'jsp',
@@ -359,6 +346,22 @@
 		    }
 		}
 
+		//파일 사이즈 계산
+		function getFileSize(fileSize, fileSizeKb, fileSizeMb){			
+            var fileSizeStr = "";
+            if ((1024*1024) <= fileSize) {    // 파일 용량이 1메가 이상인 경우
+                console.log("fileSizeMb="+fileSizeMb.toFixed(2));
+                fileSizeStr = fileSizeMb.toFixed(2) + " Mb";
+            } else if ((1024) <= fileSize) {
+                console.log("fileSizeKb="+parseInt(fileSizeKb));
+                fileSizeStr = parseInt(fileSizeKb) + " kb";
+            } else {
+                console.log("fileSize="+parseInt(fileSize));
+                fileSizeStr = parseInt(fileSize) + " byte";
+            }
+            return fileSizeStr;
+		}
+		
 		// 업로드 파일 목록 생성
 		function addFileList(fIndex, fileName, fileSizeStr) {
 		    /*
@@ -436,26 +439,6 @@
                 for (var i = 0; i < uploadFileList.length; i++) {
                     formData.append('files', fileList[uploadFileList[i]]);
                 }
-
-                $.ajax({
-                    url : "업로드 경로",
-                    data : formData,
-                    type : 'POST',
-                    enctype : 'multipart/form-data',
-                    processData : false,
-                    contentType : false,
-                    dataType : 'json',
-                    cache : false,
-                    success : function(result) {
-                        if (result.data.length > 0) {
-                            alert("성공");
-                            location.reload();
-                        } else {
-                            alert("실패");
-                            location.reload();
-                        }
-                    }
-                });
             }
         }
         

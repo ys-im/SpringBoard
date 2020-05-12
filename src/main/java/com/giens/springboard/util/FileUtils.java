@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -23,13 +25,14 @@ public class FileUtils {
 	public List<Map<String, Object>> parseInsertFileInfo(int boardNo, 
 			MultipartHttpServletRequest mpRequest) throws Exception{
 		String root_path = mpRequest.getSession().getServletContext().getRealPath("/resources/file/");
-		
+		//String root_path = mpRequest.getContextPath()+"/resources/file/";
 		Calendar calendar = new GregorianCalendar(Locale.KOREA);		
 		String year = Integer.toString(calendar.get(Calendar.YEAR));
 		String month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-		String attach_path = year+"\\"+month;
+		//String attach_path = year+"\\"+month+"\\";
+		String attach_path = year+"/"+month+"/";
 		String filePath = root_path + attach_path;	
-		System.out.println("FileUtils : ========= "+filePath);
+		filePath = filePath.replaceAll(Matcher.quoteReplacement(File.separator), "/");
 		
 		/*
 			Iterator은 데이터들의 집합체? 에서 컬렉션으로부터 정보를 얻어올 수 있는 인터페이스입니다.
@@ -42,6 +45,7 @@ public class FileUtils {
 		MultipartFile multipartFile = null;
 		String originalFileName = null;
 		String originalFileExtension = null;
+		String originalFileNameNoExt = null;
 		String storedFileName = null;
 		
 		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
@@ -61,8 +65,8 @@ public class FileUtils {
 			if(multipartFile.isEmpty() == false) {
 				originalFileName = multipartFile.getOriginalFilename();
 				originalFileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-				
-				storedFileName = strDate + originalFileExtension;
+				originalFileNameNoExt = originalFileName.substring(0, originalFileName.lastIndexOf("."));
+				storedFileName = originalFileNameNoExt + "_" + strDate + originalFileExtension;
 				
 				file = new File(filePath + storedFileName);
 				multipartFile.transferTo(file);

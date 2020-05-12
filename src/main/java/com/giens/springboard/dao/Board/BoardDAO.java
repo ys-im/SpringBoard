@@ -21,4 +21,10 @@ public interface BoardDAO {
 	
 	//게시글 상세보기
 	public List<BoardVO> getBoard(int boardNo) throws Exception;
+	
+	//첨부파일 조회
+	public List<Map<String, Object>> getBoardFileList(int boardNo) throws Exception;
+	
+	//첨부파일 다운로드
+	public Map<String, Object> getBoardFile(Map<String, Object> map) throws Exception;
 }

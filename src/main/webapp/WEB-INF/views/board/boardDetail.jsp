@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +25,7 @@
 <body id="page-top">
 	<div id="wrapper">
 		<!-- Sidebar -->
-		<%@include file="include/_sidebar.jsp"%>
+		<%@include file="../include/_sidebar.jsp"%>
 		<!-- End of Sidebar -->
 
 		<!-- Content Wrapper -->
@@ -34,7 +35,7 @@
 			<div id="content">
 
 				<!-- Topbar -->
-				<%@include file="include/_topbar.jsp"%>
+				<%@include file="../include/_topbar.jsp"%>
 				<!-- End of Topbar -->
 				
 				<div class="container-fluid">
@@ -43,7 +44,7 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">								
-									<a class="btn btn-primary mr-2" href="/editView.do"> 
+									<a class="btn btn-primary mr-2" href="#" id="editBoard"> 
 										<i class="fa fa-wrench"></i>&nbsp;수정
 									</a>							
 									<a class="btn btn-primary" href="#"> 
@@ -61,7 +62,16 @@
 								<div class="form-inline mr-auto w-100 mb-2">
 									<a class="mr-0 ml-auto" id="userName"></a>
 								</div>
-								<!-- Toast UI viewer Start -->
+								<hr class="mb-1">
+								<!-- 첨부파일목록 -->
+								<c:forEach var="file" items="${fileList}">
+									<div class="form-inline mr-auto w-100 mb-2 small">
+										<a href="#" class="mr-0 ml-auto" onclick="fnc_fileDown(${file.FILE_NO}); return false;">${file.FILE_NAME}</a>
+									</div>
+								</c:forEach>
+								
+								<hr class="mb-1">
+								<!-- Toast UI viewer Start -->								
 								<div id="viewer" class="form-control border-bottom-primary mb-2">
 								</div>	
 								<!-- End of Toast UI viewer-->								
@@ -81,8 +91,15 @@
 			</div>
 			<!-- End of Main Content -->
 			
+			<!-- download form -->
+			<section id="container">
+				<form name="readForm" role="form" method="post">
+					<input type="hidden" id="FILE_NO" name="FILE_NO" value="">
+				</form>
+			</section>
+			
 			<!-- Footer -->
-			<%@include file="include/_footer.jsp"%>
+			<%@include file="../include/_footer.jsp"%>
 			<!-- End of Footer -->
 		
 		</div>
@@ -97,7 +114,7 @@
 	</a>
 
 	<!-- Logout Modal-->
-	<%@include file="include/_logoutModal.jsp" %>
+	<%@include file="../include/_logoutModal.jsp" %>
 
 	<!-- Bootstrap core JavaScript-->
 	<script src="/resources/vendor/jquery/jquery.min.js"></script>
@@ -115,7 +132,7 @@
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
 	<script >   
-		/************************************************** viewer 데이터 */		
+		/************************************************** viewer 데이터 */	
 		window.onload = function() {
 			var boardNo = getParameterByName("boardNo");
 			var data = {"boardNo":boardNo*1};
@@ -172,6 +189,19 @@
 			});
 		};
 		
+		$("#editBoard").click(function(){
+			var boardNo = getParameterByName("boardNo");
+			location.href='/editView.do?boardNo='+boardNo;
+		});
+		
+		/************************************************** file download */
+		function fnc_fileDown(fileNo){  
+			var formObj = $("form[name='readForm']");
+			$("#FILE_NO").attr("value", fileNo);
+			formObj.attr("action", "/fileDown.do");
+			formObj.submit();
+		}
+		
 		/************************************************** function parameter값 받기  */		
 		function getParameterByName(name) {
 		    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -180,6 +210,7 @@
 		    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
 		
+		/************************************************** 답글달기 클릭*/
 		function fnc_replyClick(num){
 			location.href='/boardDetail.do?boardNo='+num;
 		}

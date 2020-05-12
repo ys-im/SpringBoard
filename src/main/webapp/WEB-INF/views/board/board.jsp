@@ -34,7 +34,7 @@
 	<!-- Page Wrapper -->
 	<div id="wrapper">
 		<!-- Sidebar -->
-		<%@include file="include/_sidebar.jsp" %>	
+		<%@include file="../include/_sidebar.jsp" %>	
 		<!-- End of Sidebar -->	
 
 		<!-- Content Wrapper -->
@@ -44,7 +44,7 @@
 			<div id="content">
 
 				<!-- Topbar -->
-				<%@include file="include/_topbar.jsp" %>				
+				<%@include file="../include/_topbar.jsp" %>				
 				<!-- End of Topbar -->
 
 				<!-- Toast UI grid Start -->
@@ -84,7 +84,7 @@
 			<!-- End of Main Content -->
 
 			<!-- Footer -->			
-			<%@include file="include/_footer.jsp" %>	
+			<%@include file="../include/_footer.jsp" %>	
 			<!-- End of Footer -->
 
 		</div>
@@ -99,7 +99,7 @@
 	</a>
 
 	<!-- Logout Modal-->
-	<%@include file="include/_logoutModal.jsp" %>
+	<%@include file="../include/_logoutModal.jsp" %>
 
 	<!-- Bootstrap core JavaScript-->
 	<script src="/resources/vendor/jquery/jquery.min.js"></script>

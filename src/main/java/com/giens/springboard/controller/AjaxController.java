@@ -1,6 +1,8 @@
 package com.giens.springboard.controller;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -37,8 +39,8 @@ public class AjaxController {
 		logger.info("board detail");
 		
 		List<BoardVO> boardDetail = boardService.getBoard(boardNo);
-						
-		return  boardDetail;
+		
+		return boardDetail;
 	}
 }
 

@@ -43,4 +43,15 @@ public class BoardDAOImpl implements BoardDAO{
 		return sqlSession.selectList("boardMapper.boardDetail", boardNo);
 	}
 
+	@Override
+	public List<Map<String, Object>> getBoardFileList(int boardNo) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("boardMapper.fileList", boardNo);
+	}
+
+	@Override
+	public Map<String, Object> getBoardFile(Map<String, Object> map) throws Exception {	
+		return sqlSession.selectOne("boardMapper.file", map);
+	}
+
 }

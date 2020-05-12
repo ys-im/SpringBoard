@@ -53,4 +53,14 @@ public class BoardServiceImpl implements BoardService{
 	public List<BoardVO> getBoard(int boardNo) throws Exception {
 		return boardDAO.getBoard(boardNo);
 	}
+
+	@Override
+	public List<Map<String, Object>> getBoardFileList(int boardNo) throws Exception {
+		return boardDAO.getBoardFileList(boardNo);
+	}
+
+	@Override
+	public Map<String, Object> getBoardFile(Map<String, Object> map) throws Exception {
+		return boardDAO.getBoardFile(map);
+	}
 }

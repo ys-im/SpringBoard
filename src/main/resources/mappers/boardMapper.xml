@@ -53,7 +53,7 @@
 	</insert>
 	
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
-		SELECT @ROWNUM:=@ROWNUM-1 as rowNo
+		SELECT 0 as ROWNUM
 			  , B.TITLE 
 		      , B.CONTENTS
 		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
@@ -69,5 +69,23 @@
 		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
 	</select>
 
+	<select id="fileList" parameterType="int" resultType="hashMap">
+		SELECT FILE_NO
+			, FILE_NAME
+			, STORED_FILE_NAME
+			, FILE_SIZE <!-- , CEIL(FILE_SIZE/1024) AS FILE_SIZE -->
+			, FILE_PATH
+		FROM BOARD_FILE
+		WHERE BOARD_NO = #{boardNo}
+	</select>
+	
+	<select id="file" parameterType="hashMap" resultType="hashMap">
+		SELECT STORED_FILE_NAME
+			, FILE_NAME
+			, FILE_PATH
+		FROM BOARD_FILE
+		WHERE FILE_NO = #{FILE_NO}
+	</select>
+	
 </mapper> 
 
