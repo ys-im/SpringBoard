@@ -87,5 +87,25 @@
 		WHERE FILE_NO = #{FILE_NO}
 	</select>
 	
+	<update id="editBoard" parameterType="com.giens.springboard.vo.BoardVO">
+		UPDATE BOARD
+			SET TITLE = #{title}
+				, CONTENTS = #{contents}
+				, USER_ID = #{userID}
+				, REG_DATE = current_timestamp()
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<delete id="deleteBoardFile" parameterType="int">
+		DELETE
+		FROM BOARD_FILE
+		WHERE FILE_NO = #{fileNo}
+	</delete>
+	
+	<delete id="deleteBoard" parameterType="int">
+		DELETE
+		FROM BOARD
+		WHERE BOARD_NO = #{boardNo}
+	</delete>
 </mapper> 
 

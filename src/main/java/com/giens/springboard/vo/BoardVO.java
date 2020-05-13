@@ -7,22 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class BoardVO {
 	
-	private int rowNo;
+	private String rowNo;
 	private String title;
 	private String contents;
 	private String regDate;
 	private String userID;
-	private int boardNo;
-	private int originNo;
-	private int groupSeq;
-	private int groupLayer;
-	private int pBoardNo;
+	private String boardNo;
+	private String originNo;
+	private String groupSeq;
+	private String groupLayer;
+	private String pBoardNo;
 	private String groupPath;
-	private int replyCnt;
+	private String replyCnt;
 	
 	//Constructor		
-	public BoardVO(int rowNo, String title, String contents, String regDate, String userID, int boardNo, int originNo,
-			int groupSeq, int groupLayer, int pBoardNo, String groupPath, int replyCnt) {
+	public BoardVO(String rowNo, String title, String contents, String regDate, String userID, String boardNo, String originNo,
+			String groupSeq, String groupLayer, String pBoardNo, String groupPath, String replyCnt) {
 		super();
 		this.rowNo = rowNo;
 		this.title = title;
@@ -39,11 +39,11 @@ public class BoardVO {
 	}
 	
 	//Getter/Setter
-	public int getRowNo() {
+	public String getRowNo() {
 		return rowNo;
 	}	
 
-	public void setRowNo(int rowNo) {
+	public void setRowNo(String rowNo) {
 		this.rowNo = rowNo;
 	}
 
@@ -79,43 +79,43 @@ public class BoardVO {
 		this.userID = userID;
 	}
 
-	public int getBoardNo() {
+	public String getBoardNo() {
 		return boardNo;
 	}
 
-	public void setBoardNo(int boardNo) {
+	public void setBoardNo(String boardNo) {
 		this.boardNo = boardNo;
 	}
 
-	public int getOriginNo() {
+	public String getOriginNo() {
 		return originNo;
 	}
 
-	public void setOriginNo(int originNo) {
+	public void setOriginNo(String originNo) {
 		this.originNo = originNo;
 	}
 
-	public int getGroupSeq() {
+	public String getGroupSeq() {
 		return groupSeq;
 	}
 
-	public void setGroupSeq(int groupSeq) {
+	public void setGroupSeq(String groupSeq) {
 		this.groupSeq = groupSeq;
 	}
 
-	public int getGroupLayer() {
+	public String getGroupLayer() {
 		return groupLayer;
 	}
 
-	public void setGroupLayer(int groupLayer) {
+	public void setGroupLayer(String groupLayer) {
 		this.groupLayer = groupLayer;
 	}
 
-	public int getpBoardNo() {
+	public String getpBoardNo() {
 		return pBoardNo;
 	}
 
-	public void setpBoardNo(int pBoardNo) {
+	public void setpBoardNo(String pBoardNo) {
 		this.pBoardNo = pBoardNo;
 	}
 
@@ -127,11 +127,11 @@ public class BoardVO {
 		this.groupPath = groupPath;
 	}
 	
-	public int getReplyCnt() {
+	public String getReplyCnt() {
 		return replyCnt;
 	}
 
-	public void setReplyCnt(int replyCnt) {
+	public void setReplyCnt(String replyCnt) {
 		this.replyCnt = replyCnt;
 	}
 

@@ -54,4 +54,19 @@ public class BoardDAOImpl implements BoardDAO{
 		return sqlSession.selectOne("boardMapper.file", map);
 	}
 
+	@Override
+	public void editBoard(BoardVO boardVO) throws Exception {
+		sqlSession.update("boardMapper.editBoard", boardVO);
+	}
+
+	@Override
+	public void deleteBoardFile(int fileNo) throws Exception {
+		sqlSession.delete("boardMapper.deleteBoardFile", fileNo);
+	}
+
+	@Override
+	public void deleteBoard(int boardNo) throws Exception {
+		sqlSession.delete("boardMapper.deleteBoard", boardNo);
+	}
+
 }

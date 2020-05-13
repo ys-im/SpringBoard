@@ -36,11 +36,11 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public void addBoardFile(int boardNo, MultipartHttpServletRequest mpRequest) throws Exception {
 		List<Map<String, Object>> list = fileUtils.parseInsertFileInfo(boardNo, mpRequest);
-		int size = list.size();
-		System.out.println("BoardServiceImpl : ========= list size : "+size);
+		
+		int size = list.size();		
+		
 		for(int i = 0; i < size; i++) {
 			boardDAO.addBoardFile(list.get(i));
-			System.out.println("BoardServiceImpl : ========= "+list.get(i));
 		}
 	}
 
@@ -62,5 +62,24 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public Map<String, Object> getBoardFile(Map<String, Object> map) throws Exception {
 		return boardDAO.getBoardFile(map);
+	}
+
+	@Override
+	public void editBoard(BoardVO boardVO) throws Exception {
+		boardDAO.editBoard(boardVO);		
+	}
+
+	@Override
+	public void deleteBoardFile(int boardNo, List<String> deleteFileNoList) throws Exception {
+		int size = deleteFileNoList.size();
+		for(int i = 0; i < size; i++) {
+			int fileNo = Integer.parseInt(deleteFileNoList.get(i));
+			boardDAO.deleteBoardFile(fileNo);
+		}
+	}
+
+	@Override
+	public void deleteBoard(int boardNo) throws Exception {
+		boardDAO.deleteBoard(boardNo);
 	}
 }

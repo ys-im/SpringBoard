@@ -71,12 +71,15 @@
 								<!-- End of Toast UI grid-->
 								
 							</div>
-							<div class="upload-btn-wrapper">
-								<input type="file" id="input_file" multiple="multiple" class="btn btn-primary" />
-							</div>
-							<br />
 							
+							<div class="upload-btn-wrapper mb-2 mt-2">
+								<input type="file" id="input_file" multiple="multiple" class="btn btn-primary" />
+							</div>							
 							<!-- File Upload Form -->
+							<div class="form-inline mb-0">
+								<p class="mb-0" style="color:#7bade3;">기존에 첨부된 파일&nbsp;</p> 
+								<p class="mb-0">/&nbsp;새로 첨부한 파일</p>
+							</div>
 							<form name="uploadForm" id="uploadForm" enctype="multipart/form-data" method="post">
 								<div id="dropZone"
 									style="height: auto; min-height: 100px; border-style: dashed; border-color: gray;">
@@ -87,6 +90,7 @@
 									</div>
 								</div>
 								<input type="hidden" id="boardNo" name="boardNo" value="${edit.boardNo}"/>
+								<input type="hidden" id="pBoardNo" name="pBoardNo" value="${edit.pBoardNo}"/>
 							</form>
 						</div>
 
@@ -134,6 +138,7 @@
 	<!-- Page level custom scripts -->
 	<script type="text/javascript">
 		/************************************************** editor 데이터 */	
+		var attachedFileList = new Array();
 		var editor;
 		$(document).ready(function() {
 			var boardNo = "${edit.boardNo}";
@@ -161,6 +166,7 @@
 					console.log(error);
 				}
 			});
+			
 			//기존의 첨부파일 불러오기
 			(function(){
 				$.getJSON("/getAttachedList.do", data, function(arr){
@@ -168,23 +174,11 @@
 						var fileSize = attach.FILE_SIZE
 						var fileSizeKb = fileSize / 1024; // 파일 사이즈(단위 :kb)
 	            		var fileSizeMb = fileSizeKb / 1024;    // 파일 사이즈(단위 :Mb)
-						addFileList(i, attach.FILE_NAME, getFileSize(fileSize, fileSizeKb, fileSizeMb));
-						/* var filePath = attach.FILE_PATH.split("/resources/")[1];
-						filePath = "/resources/"+filePath+attach.STORED_FILE_NAME;
-						var fileDir = attach.FILE_PATH + attach.STORED_FILE_NAME;
-						//var file = [new File([attach], attach.FILE_NAME)];
-						//var file = window.URL.createObjectURL(fileDir);
-						//console.log(file);
-						var rawFile = new XMLHttpRequest();
-						rawFile.open("GET", filePath);
-						rawFile.responseType = "blob";
-						rawFile.onload = function(){
-							callback(rawFile.response);
-						}
-						rawFile.send(null);
-						selectFile(rawFile);
-						//selectFile(attach); */
-					});					
+	            		attachedFileList[i] = attach;
+	            		var aIndex = -(i+1);
+	            		addFileList(aIndex, attach.FILE_NAME, getFileSize(fileSize, fileSizeKb, fileSizeMb), "old");
+					});	
+            		//console.log(attachedFileList);
 				});
 			})();
 		});
@@ -201,10 +195,9 @@
 		// 등록 가능한 파일 사이즈 MB
 		var uploadSize = 50;
 		
-		$("#edit").click(function(){			
+		$("#edit").click(function(){	
 			var title = $("#title").val();
 			var userID = "테스트작성자";
-			var pBoardNo = getParameterByName("pBoardNo")*1;
 			var contents = editor.getValue();
 
 	        var uploadFileList = Object.keys(fileList);
@@ -215,16 +208,18 @@
                 formData.append('files'+i, fileList[uploadFileList[i]]);
             }
             console.log(fileList);
+            
+            var attached = new Array();
+            for(var i = 0; i < attachedFileList.length; i++){
+            	if(typeof(attachedFileList[i]) != "undefined"){
+            		attached[i] = attachedFileList[i].FILE_NO;
+            	}
+            }
+            formData.append("attached", attached);
+            //boardNo은 uploadForm 안에 있음.            
             formData.append('title', title);
             formData.append('userID', userID);
             formData.append('contents', contents);
-            for(var key in formData.keys()){
-            	console.log(key);
-            }
-            for(var value in formData.values()){
-            	console.log(value);
-            }
-						
 			if(title.replace(/\s/gi, "").length == 0){
 				alert("제목을 입력해 주세요.");
 				$("#title").focus();
@@ -321,17 +316,13 @@
 		        // 직접 파일 등록시
 		        files = $('#multipartFileList_' + fileIndex)[0].files;
 		    }
-		    console.log(files);
+		    //console.log(files);
+		    
+		    var attachedCount = attachedFileList.length;
+		    //console.log(attachedCount);
+		    
 		    // 다중파일 등록
 		    if (files != null) {
-		        
-		        if (files != null && files.length > 0) {
-		            $("#fileDragDesc").hide(); 
-		            $("fileListTable").show();
-		        } else {
-		            $("#fileDragDesc").show(); 
-		            $("fileListTable").hide();
-		        }
 		        
 		        for (var i = 0; i < files.length; i++) {
 		            // 파일 이름
@@ -372,14 +363,14 @@
 		                // 전체 파일 사이즈
 		                totalFileSize += fileSizeMb;
 
-		                // 파일 배열에 넣기
+		                // 파일 배열에 넣기 (새로 추가된 파일)
 		                fileList[fileIndex] = files[i];
-
+		                
 		                // 파일 사이즈 배열에 넣기
 		                fileSizeList[fileIndex] = fileSizeMb;
 
 		                // 업로드 파일 목록 생성
-		                addFileList(fileIndex, fileName, fileSizeStr);
+		                addFileList(fileIndex, fileName, fileSizeStr, "new");
 
 		                // 파일 번호 증가
 		                fileIndex++;
@@ -390,29 +381,25 @@
 		    }
 		}
 		    
-		//파일 사이즈 계산
-		function getFileSize(fileSize, fileSizeKb, fileSizeMb){			
-            var fileSizeStr = "";
-            if ((1024*1024) <= fileSize) {    // 파일 용량이 1메가 이상인 경우
-                console.log("fileSizeMb="+fileSizeMb.toFixed(2));
-                fileSizeStr = fileSizeMb.toFixed(2) + " Mb";
-            } else if ((1024) <= fileSize) {
-                console.log("fileSizeKb="+parseInt(fileSizeKb));
-                fileSizeStr = parseInt(fileSizeKb) + " kb";
-            } else {
-                console.log("fileSize="+parseInt(fileSize));
-                fileSizeStr = parseInt(fileSize) + " byte";
-            }
-            return fileSizeStr;
-		}
 		// 업로드 파일 목록 생성
-		function addFileList(fIndex, fileName, fileSizeStr) {
+		function addFileList(fIndex, fileName, fileSizeStr, oldNew) {
 		    /*
 			 * if (fileSize.match("^0")) { alert("start 0"); }
-			 */
-
+			 */		        
+	        if (fileList.length > 0 || attachedFileList.length > 0) {
+	            $("#fileDragDesc").hide(); 
+	            $("fileListTable").show();
+	        } else {
+	            $("#fileDragDesc").show(); 
+	            $("fileListTable").hide();
+	        }
+			 
 		    var html = "";
-		    html += "<li id='fileTr_" + fIndex + "'>";
+		    if(oldNew==="old"){
+		    	html += "<li style='color:#7bade3;' id='fileLi_" + fIndex + "'>";
+		    }else{
+		    	html += "<li id='fileLi_" + fIndex + "'>";
+		    }
 		   // html += "    <td id='dropZone' class='left' >";
 		    html += fileName + " (" + fileSizeStr +") " 
 		            // + "<a href='#' onclick='deleteFile(" + fIndex + ");
@@ -423,26 +410,33 @@
 		    html += "</li>"
 
 		    $('#fileList ul').append(html);
+		    
 		}
 
 		// 업로드 파일 삭제
 		function deleteFile(fIndex) {
 		    console.log("deleteFile.fIndex=" + fIndex);
 		    // 전체 파일 사이즈 수정
-		    totalFileSize -= fileSizeList[fIndex];
+		    totalFileSize -= fileSizeList[fIndex];		 	
+		    
+		    if(fIndex < 0){
+		    	// 기존 첨부파일 리스트에서 삭제
+				delete attachedFileList[Math.abs(fIndex+1)]; //attachedFileList.splice(Math.abs(fIndex+1), 1);  //
 
-		    // 파일 배열에서 삭제
-		    delete fileList[fIndex];
+		    }else{
+			    // 파일 배열에서 삭제
+			    delete fileList[fIndex]; //fileList.splice(fIndex, 1); //			    
 
-		    // 파일 사이즈 배열 삭제
-		    delete fileSizeList[fIndex];
+			    // 파일 사이즈 배열 삭제
+			    delete fileSizeList[fIndex];
+		    }		    
 
 		    // 업로드 파일 테이블 목록에서 삭제
-		    $("#fileTr_" + fIndex).remove();
+		    $("#fileLi_" + fIndex).remove();
 		    
 		    console.log("totalFileSize="+totalFileSize);
 		    
-		    if (totalFileSize > 0) {
+		    if (totalFileSize > 0 || attachedFileList.length > 0){  //if (totalFileSize > 0) {
 		        $("#fileDragDesc").hide(); 
 		        $("fileListTable").show();
 		    } else {
@@ -452,7 +446,7 @@
 		}
 		
         // 파일 등록
-        function uploadFile() {
+       	/* function uploadFile() {
             // 등록할 파일 리스트
             var uploadFileList = Object.keys(fileList);
 
@@ -483,7 +477,23 @@
                     formData.append('files', fileList[uploadFileList[i]]);
                 }
             }
-        }
+        } */  
+	    
+		//파일 사이즈 계산
+		function getFileSize(fileSize, fileSizeKb, fileSizeMb){			
+            var fileSizeStr = "";
+            if ((1024*1024) <= fileSize) {    // 파일 용량이 1메가 이상인 경우
+                console.log("fileSizeMb="+fileSizeMb.toFixed(2));
+                fileSizeStr = fileSizeMb.toFixed(2) + " Mb";
+            } else if ((1024) <= fileSize) {
+                console.log("fileSizeKb="+parseInt(fileSizeKb));
+                fileSizeStr = parseInt(fileSizeKb) + " kb";
+            } else {
+                console.log("fileSize="+parseInt(fileSize));
+                fileSizeStr = parseInt(fileSize) + " byte";
+            }
+            return fileSizeStr;
+		}
         
         /************************************************** function parameter값 받기  */		
 		function getParameterByName(name) {

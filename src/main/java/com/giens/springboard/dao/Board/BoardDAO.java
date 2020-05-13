@@ -27,4 +27,13 @@ public interface BoardDAO {
 	
 	//첨부파일 다운로드
 	public Map<String, Object> getBoardFile(Map<String, Object> map) throws Exception;
+	
+	//게시글 수정
+	public void editBoard(BoardVO boardVO) throws Exception;
+	
+	//게시글 첨부파일 삭제
+	public void deleteBoardFile(int fileNo) throws Exception;
+	
+	//게시글 삭제
+	public void deleteBoard(int boardNo) throws Exception;
 }

@@ -3,6 +3,7 @@ package com.giens.springboard.controller;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,18 +76,19 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/write.do", method = RequestMethod.POST)
-	public String addBoard(String title, String userID, String contents, int pBoardNo, MultipartHttpServletRequest mpRequest) throws Exception {
+	public String addBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest) throws Exception {
 		logger.info("add board");
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("title", title);
-		params.put("userID", userID);
-		params.put("contents", contents);
-		params.put("pBoardNo", pBoardNo);
+		params.put("title", boardVO.getTitle());
+		params.put("userID", boardVO.getUserID());
+		params.put("contents", boardVO.getContents());
+		params.put("pBoardNo", boardVO.getpBoardNo());
 		
 		//게시판 글 등록
 		boardService.addBoard(params);
 		int boardNo = (int)params.get("boardNo");
 		
+		int pBoardNo = Integer.parseInt(boardVO.getpBoardNo());
 		if(pBoardNo == 0) {
 			boardService.updateBoardNew();
 		}
@@ -176,10 +178,42 @@ public class BoardController {
 	 * @reference
 	 */
 	@RequestMapping(value="/edit.do", method = RequestMethod.POST)
-	public String editBoard(int boardNo, MultipartHttpServletRequest mpRequest) throws Exception {
-		logger.info("edit board");
+	public String editBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest) throws Exception {
+		logger.info("edit board");	
 		
-		return "";
+
+		int boardNo = Integer.parseInt(boardVO.getBoardNo());
+		//변경된 기존 첨부파일 리스트
+		List<String> modifiedFileNoList = Arrays.asList(mpRequest.getParameter("attached").split(","));
+		
+		//기존에 첨부되있던 파일 리스트
+		List<Map<String, Object>> savedfileList = boardService.getBoardFileList(boardNo);
+		int fileCount = savedfileList.size();	
+		
+		//삭제할 첨부파일 번호 리스트 선언
+		List<String> deleteFileNoList = new ArrayList<String>();
+		for(int i = 0; i < fileCount; i++) {
+			//기존 첨부파일 번호 넣어줌
+			deleteFileNoList.add(savedfileList.get(i).get("FILE_NO").toString());
+		}
+		
+		for(int i = 0; i < modifiedFileNoList.size(); i++) {
+			if(deleteFileNoList.contains(modifiedFileNoList.get(i))) {
+				//기존 첨부파일 번호 리스트에 변경된 첨부파일 리스트의 파일 번호가 존재한다면 삭제하지 말아야 하므로 삭제할 첨부파일 리스트에서 제거
+				deleteFileNoList.remove(deleteFileNoList.indexOf(modifiedFileNoList.get(i)));
+			}
+		}
+		//System.out.println("편집된 파일 번호 : "+modifiedFileNoList);
+		//System.out.println("삭제할 파일 번호 : "+deleteFileNoList);
+		
+		//게시글 첨부파일 삭제
+		boardService.deleteBoardFile(boardNo, deleteFileNoList);
+
+		//게시글 새로운 첨부파일 업로드
+		boardService.addBoardFile(boardNo, mpRequest);
+		//게시글 수정
+		boardService.editBoard(boardVO);
+		return "redirect:/board.do";
 	}
 	
 	/**
@@ -188,9 +222,21 @@ public class BoardController {
 	 * @description 게시글 삭제
 	 * @reference
 	 */
-	@RequestMapping(value="/delete.do")
+	@RequestMapping(value="/deleteBoard.do")
 	public String deleteBoard(int boardNo) throws Exception {
 		logger.info("delete board");
+		
+		//게시글 삭제
+		boardService.deleteBoard(boardNo);
+		
+		//게시글에 첨부된 첨부파일 삭제
+		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
+		List<String> deleteFileNoList = new ArrayList<String>();
+		for(int i = 0; i < fileList.size(); i++) {
+			//기존 첨부파일 번호 넣어줌
+			deleteFileNoList.add(fileList.get(i).get("FILE_NO").toString());
+		}
+		boardService.deleteBoardFile(boardNo, deleteFileNoList);
 		return "redirect:/board.do";
 	}
 }

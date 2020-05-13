@@ -44,10 +44,10 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">								
-									<a class="btn btn-primary mr-2" href="#" id="editBoard"> 
+									<a class="btn btn-primary mr-2" href="#" onclick="fnc_editView(); return false;"> 
 										<i class="fa fa-wrench"></i>&nbsp;수정
 									</a>							
-									<a class="btn btn-primary" href="#"> 
+									<a class="btn btn-primary" href="#" onclick="fnc_delete(); return false;"> 
 										<i class="fa fa-trash-alt"></i>&nbsp;삭제
 									</a>
 									<a class="btn btn-primary mr-0 ml-auto" href="#" id="write"> 
@@ -189,10 +189,15 @@
 			});
 		};
 		
-		$("#editBoard").click(function(){
+		function fnc_editView(){
 			var boardNo = getParameterByName("boardNo");
 			location.href='/editView.do?boardNo='+boardNo;
-		});
+		}
+		
+		function fnc_delete(){
+			var boardNo = getParameterByName("boardNo");
+			location.href="/deleteBoard.do?boardNo="+boardNo;
+		}
 		
 		/************************************************** file download */
 		function fnc_fileDown(fileNo){  
