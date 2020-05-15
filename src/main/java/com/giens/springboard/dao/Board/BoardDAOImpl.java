@@ -29,7 +29,7 @@ public class BoardDAOImpl implements BoardDAO{
 	}
 
 	@Override
-	public void addBoardFile(Map<String, Object> params) throws Exception {
+	public void addBoardFile(List<Map<String, Object>> params) throws Exception {
 		sqlSession.insert("boardMapper.addBoardFile", params);		
 	}
 	
@@ -60,8 +60,8 @@ public class BoardDAOImpl implements BoardDAO{
 	}
 
 	@Override
-	public void deleteBoardFile(int fileNo) throws Exception {
-		sqlSession.delete("boardMapper.deleteBoardFile", fileNo);
+	public void deleteBoardFile(List<Map<String, String>> deleteFileList) throws Exception {
+		sqlSession.delete("boardMapper.deleteBoardFile", deleteFileList);
 	}
 
 	@Override

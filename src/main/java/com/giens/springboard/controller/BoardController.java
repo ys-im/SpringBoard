@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -94,9 +93,10 @@ public class BoardController {
 		}
 				
 		//게시판 글에 첨부파일 등록
-		boardService.addBoardFile(boardNo, mpRequest);
+		List<Map<String, Object>> list = fileUtils.parseInsertFileInfo(boardNo, mpRequest);
+		boardService.addBoardFile(list);
 		
-		return "redirect:/board.do";
+		return "redirect:/writeView.do";
 	}
 	
 	/** 
@@ -179,41 +179,63 @@ public class BoardController {
 	 */
 	@RequestMapping(value="/edit.do", method = RequestMethod.POST)
 	public String editBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest) throws Exception {
-		logger.info("edit board");	
-		
+		logger.info("edit board");			
 
 		int boardNo = Integer.parseInt(boardVO.getBoardNo());
 		//변경된 기존 첨부파일 리스트
 		List<String> modifiedFileNoList = Arrays.asList(mpRequest.getParameter("attached").split(","));
 		
-		//기존에 첨부되있던 파일 리스트
-		List<Map<String, Object>> savedfileList = boardService.getBoardFileList(boardNo);
-		int fileCount = savedfileList.size();	
-		
-		//삭제할 첨부파일 번호 리스트 선언
-		List<String> deleteFileNoList = new ArrayList<String>();
-		for(int i = 0; i < fileCount; i++) {
-			//기존 첨부파일 번호 넣어줌
-			deleteFileNoList.add(savedfileList.get(i).get("FILE_NO").toString());
-		}
-		
-		for(int i = 0; i < modifiedFileNoList.size(); i++) {
-			if(deleteFileNoList.contains(modifiedFileNoList.get(i))) {
-				//기존 첨부파일 번호 리스트에 변경된 첨부파일 리스트의 파일 번호가 존재한다면 삭제하지 말아야 하므로 삭제할 첨부파일 리스트에서 제거
-				deleteFileNoList.remove(deleteFileNoList.indexOf(modifiedFileNoList.get(i)));
+		if(modifiedFileNoList.contains("")) {
+			//기존에 첨부되있던 파일 리스트
+			List<Map<String, Object>> savedfileList = boardService.getBoardFileList(boardNo);
+			int fileCount = savedfileList.size();	
+			
+			//삭제할 첨부파일 번호 리스트 선언
+			List<Map<String, String>> deleteFileList = new ArrayList<Map<String, String>>();
+			for(int i = 0; i < fileCount; i++) {
+				String fileNo = savedfileList.get(i).get("FILE_NO").toString();
+				String filePathInfo = savedfileList.get(i).get("FILE_PATH").toString() 
+										+ savedfileList.get(i).get("STORED_FILE_NAME").toString();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("fileNo", fileNo);
+				map.put("filePathInfo", filePathInfo);
+				//기존 첨부파일 번호 넣어줌
+				deleteFileList.add(map);
 			}
+					
+			List<String> deleteFileNoList = new ArrayList<String>();
+			for(int i = 0; i < deleteFileList.size(); i++) {
+				deleteFileNoList.add(deleteFileList.get(i).get("fileNo"));
+			}
+			System.out.println(deleteFileList);
+			System.out.println(deleteFileNoList);
+			
+			for(int i = 0; i < modifiedFileNoList.size(); i++) {
+				if(deleteFileNoList.contains(modifiedFileNoList.get(i))) {
+					//기존 첨부파일 번호 리스트에 변경된 첨부파일 리스트의 파일 번호가 존재한다면 삭제하지 말아야 하므로 삭제할 첨부파일 리스트에서 제거
+					int idx = deleteFileNoList.indexOf(modifiedFileNoList.get(i));
+					deleteFileNoList.remove(idx);
+					deleteFileList.remove(idx);
+				}
+			}
+			
+			//System.out.println("편집된 파일 번호 : "+modifiedFileNoList);
+			//System.out.println("삭제할 파일번호 리스트 : "+deleteFileNoList);
+			//System.out.println("삭제할 파일 리스트 : "+deleteFileList);
+			
+			//게시글 첨부파일 삭제
+			boardService.deleteBoardFile(deleteFileList);
 		}
-		//System.out.println("편집된 파일 번호 : "+modifiedFileNoList);
-		//System.out.println("삭제할 파일 번호 : "+deleteFileNoList);
-		
-		//게시글 첨부파일 삭제
-		boardService.deleteBoardFile(boardNo, deleteFileNoList);
 
 		//게시글 새로운 첨부파일 업로드
-		boardService.addBoardFile(boardNo, mpRequest);
+		List<Map<String, Object>> list = fileUtils.parseInsertFileInfo(boardNo, mpRequest);
+		if(list.size()>0) {
+			boardService.addBoardFile(list);
+		}
 		//게시글 수정
 		boardService.editBoard(boardVO);
-		return "redirect:/board.do";
+		
+		return "redirect:/boardDetail.do?boardNo="+boardNo;
 	}
 	
 	/**
@@ -228,15 +250,34 @@ public class BoardController {
 		
 		//게시글 삭제
 		boardService.deleteBoard(boardNo);
-		
-		//게시글에 첨부된 첨부파일 삭제
+
 		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
-		List<String> deleteFileNoList = new ArrayList<String>();
+		
+		//게시글에 첨부된 첨부파일 삭제 DB
+		List<Map<String, String>> deleteFileList = new ArrayList<Map<String, String>>();
 		for(int i = 0; i < fileList.size(); i++) {
+			String fileNo = fileList.get(i).get("FILE_NO").toString();
+			String filePathInfo = fileList.get(i).get("FILE_PATH").toString() 
+									+ fileList.get(i).get("STORED_FILE_NAME").toString();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("fileNo", fileNo);
+			map.put("filePathInfo", filePathInfo);
 			//기존 첨부파일 번호 넣어줌
-			deleteFileNoList.add(fileList.get(i).get("FILE_NO").toString());
+			deleteFileList.add(map);
 		}
-		boardService.deleteBoardFile(boardNo, deleteFileNoList);
+		boardService.deleteBoardFile(deleteFileList);
+		
+		//게시글에 첨부된 첨부파일 삭제 Directory
+		int size = deleteFileList.size();
+		for(int i = 0; i < size; i++) {
+			String fileInfo = deleteFileList.get(i).get("filePathInfo");
+			File file = new File(fileInfo); //파일 실물 디렉토리
+			if(file.exists()) {
+				//파일 경로 + 저장된 파일명 까지 가져왔으므로 file.isDirectory() 생략
+				file.delete();
+			}
+		}		
+		
 		return "redirect:/board.do";
 	}
 }

@@ -47,13 +47,27 @@
 		WHERE ORIGIN_NO = 0
 	</update>
 	
-	<insert id="addBoardFile">
-		INSERT INTO board_file(FILE_NAME, STORED_FILE_NAME, FILE_SIZE, BOARD_NO, FILE_PATH)
-		VALUES(#{FILE_NAME}, #{STORED_FILE_NAME}, #{FILE_SIZE}, #{BOARD_NO}, #{FILE_PATH})
+	<insert id="addBoardFile" parameterType="java.util.List">
+		INSERT INTO board_file(
+			FILE_NAME
+			, STORED_FILE_NAME
+			, FILE_SIZE
+			, BOARD_NO
+			, FILE_PATH
+		)VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.FILE_NAME}
+			, #{item.STORED_FILE_NAME}
+			, #{item.FILE_SIZE}
+			, #{item.BOARD_NO}
+			, #{item.FILE_PATH}
+		)
+		</foreach>
 	</insert>
 	
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
-		SELECT 0 as ROWNUM
+		SELECT "" as ROWNUM
 			  , B.TITLE 
 		      , B.CONTENTS
 		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
@@ -65,7 +79,7 @@
 		      , B.P_BOARD_NO 
 		      , B.GROUP_PATH 
 		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
-		FROM board B, (SELECT @ROWNUM := (SELECT COUNT(0) FROM board)+1) TMP
+		FROM board B
 		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
 	</select>
 
@@ -96,10 +110,14 @@
 		WHERE BOARD_NO = #{boardNo}
 	</update>
 	
-	<delete id="deleteBoardFile" parameterType="int">
+	<delete id="deleteBoardFile" parameterType="java.util.List">
 		DELETE
 		FROM BOARD_FILE
-		WHERE FILE_NO = #{fileNo}
+		<where>
+			<foreach collection="list" item="item" open="(" close=")" separator="OR">
+				FILE_NO = #{item.fileNo}
+			</foreach>
+		</where>
 	</delete>
 	
 	<delete id="deleteBoard" parameterType="int">

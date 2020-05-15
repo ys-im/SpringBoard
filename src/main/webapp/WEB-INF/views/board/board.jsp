@@ -125,9 +125,11 @@
 				this.props = props;
 				const aTag = document.createElement('a');
 				let title = props.value;
-								
+				let boardNo = props.grid.getValue(props.rowKey, "boardNo");
+				
 				aTag.innerHTML = title;
-				aTag.href = "#";
+				aTag.href = "/boardDetail.do?boardNo="+boardNo;
+				aTag.id = boardNo;
 				aTag.className = "boardTitle";
 				aTag.style = "margin-left: 10px";
 				
@@ -216,10 +218,11 @@
 		}); 
 		
 		/************************************************** grid 데이터 */		
-		window.onload = function() {
+		$(document).ready(function() {	
 			$.ajax({
 				url : "/ajax/toastBoardList.do",
 				method : "POST",
+				async: false,
 				dataType : "json",
 				success : function(result) {
 					grid.resetData(result);					
@@ -230,15 +233,6 @@
 					console.log("error: "+error);
 				}
 			});
-		};
-		
-		/************************************************** Custom */	
-		grid.on('click', function(ev){
-			if(ev.columnName=='title'){
-				var boardNo = grid.getValue(ev.rowKey, 'boardNo');
-				//console.log("grid.on : "+boardNo);
-				location.href = '/boardDetail.do?boardNo='+boardNo;
-			}
 		});
 	</script>
 

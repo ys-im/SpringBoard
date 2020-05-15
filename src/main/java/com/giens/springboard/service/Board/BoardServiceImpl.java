@@ -1,5 +1,6 @@
 package com.giens.springboard.service.Board;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -34,14 +35,8 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public void addBoardFile(int boardNo, MultipartHttpServletRequest mpRequest) throws Exception {
-		List<Map<String, Object>> list = fileUtils.parseInsertFileInfo(boardNo, mpRequest);
-		
-		int size = list.size();		
-		
-		for(int i = 0; i < size; i++) {
-			boardDAO.addBoardFile(list.get(i));
-		}
+	public void addBoardFile(List<Map<String, Object>> list) throws Exception {
+		boardDAO.addBoardFile(list);
 	}
 
 	@Override
@@ -70,12 +65,8 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public void deleteBoardFile(int boardNo, List<String> deleteFileNoList) throws Exception {
-		int size = deleteFileNoList.size();
-		for(int i = 0; i < size; i++) {
-			int fileNo = Integer.parseInt(deleteFileNoList.get(i));
-			boardDAO.deleteBoardFile(fileNo);
-		}
+	public void deleteBoardFile(List<Map<String, String>> deleteFileList) throws Exception {
+		boardDAO.deleteBoardFile(deleteFileList);
 	}
 
 	@Override

@@ -59,9 +59,9 @@
 									<div class="col-sm-8">
 										<input type="text" id="title" name="title" class="form-control" />
 									</div>
-									<a class="btn btn-primary mr-3 ml-auto" href="#" id="write"> 
+									<button class="btn btn-primary mr-3 ml-auto" id="write"> 
 										<i class="fa fa-pen"></i>&nbsp;작성
-									</a>
+									</button>
 								</div>
 								
 								<!-- Toast UI grid Start -->
@@ -173,13 +173,7 @@
             formData.append('userID', userID);
             formData.append('pBoardNo', pBoardNo);
             formData.append('contents', contents);
-            for(var key in formData.keys()){
-            	console.log(key);
-            }
-            for(var value in formData.values()){
-            	console.log(value);
-            }
-            
+                        
 			//var data = {"title":title, "userID":userID, "pBoardNo":pBoardNo, "contents":contents, "formData":formData};
 						
 			if(title.replace(/\s/gi, "").length == 0){
@@ -192,20 +186,21 @@
 				alert("글을 입력해 주세요.");
 				editor.focus();
 				return;
-			}            
-            
+			}   
+			
 			$.ajax({
 				url:"/write.do",
 				type: "POST",
+				processData: false, // 필수 
+				contentType: false, // 필수
+				cache: false,
 				data: formData,
 				async: false,
                 enctype : 'multipart/form-data',
-                processData : false,
-                contentType : false,
-                dataType : 'json',
-                cache : false,
-				success: function(data){
-					console.log(data);
+                dataType : 'html',
+				success: function(result){
+					location.href = document.referrer;
+					history.back();
 				},
 				error: function(xhr, status, error){
 					console.log(error);
@@ -221,9 +216,9 @@
 		});
 
 		$(function() {
-		    // 파일 드롭 다운
-		        fileDropDown();
-		    });
+	    	// 파일 드롭 다운
+	        fileDropDown();
+	    });
 			
 		 // 파일 드롭 다운
 		function fileDropDown() {

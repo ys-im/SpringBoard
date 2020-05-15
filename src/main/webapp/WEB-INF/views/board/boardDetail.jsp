@@ -44,15 +44,15 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">								
-									<a class="btn btn-primary mr-2" href="#" onclick="fnc_editView(); return false;"> 
+									<button class="btn btn-primary mr-2" onclick="fnc_editView()"> 
 										<i class="fa fa-wrench"></i>&nbsp;수정
-									</a>							
-									<a class="btn btn-primary" href="#" onclick="fnc_delete(); return false;"> 
+									</button>							
+									<button class="btn btn-primary" onclick="fnc_delete()"> 
 										<i class="fa fa-trash-alt"></i>&nbsp;삭제
-									</a>
-									<a class="btn btn-primary mr-0 ml-auto" href="#" id="write"> 
+									</button>
+									<button class="btn btn-primary mr-0 ml-auto" id="write"> 
 										<i class="fa fa-pen"></i>&nbsp;답글 작성
-									</a>
+									</button>
 								</div>
 								<hr class="mb-1"/>
 								<div class="form-inline mr-auto w-100 mb-2">

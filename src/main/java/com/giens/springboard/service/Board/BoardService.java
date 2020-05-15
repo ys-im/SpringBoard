@@ -19,7 +19,7 @@ public interface BoardService {
 	public void addBoard(Map<String, Object> params) throws Exception;
 	
 	//게시글 첨부파일 업로드
-	public void addBoardFile(int boardNo, MultipartHttpServletRequest mpRequest) throws Exception;
+	public void addBoardFile(List<Map<String, Object>> list) throws Exception;
 	
 	//원본게시글 작성 업데이트
 	public void updateBoardNew() throws Exception;
@@ -37,7 +37,7 @@ public interface BoardService {
 	public void editBoard(BoardVO boardVO) throws Exception;
 	
 	//게시글 첨부파일 삭제
-	public void deleteBoardFile(int boardNo, List<String> deleteFileNoList) throws Exception;
+	public void deleteBoardFile(List<Map<String, String>> deleteFileList) throws Exception;
 	
 	//게시글 삭제
 	public void deleteBoard(int boardNo) throws Exception;

@@ -11,7 +11,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<title>게시판 답글쓰기</title>
+<title>게시글 수정</title>
 
 <!-- Custom fonts for this template -->
 <link href="/resources/vendor/fontawesome-free/css/all.min.css"
@@ -59,9 +59,9 @@
 									<div class="col-sm-8">
 										<input type="text" id="title" name="title" value="${edit.title}" class="form-control" />
 									</div>
-									<a class="btn btn-primary mr-3 ml-auto" href="#" id="edit"> 
+									<button class="btn btn-primary mr-3 ml-auto" id="edit"> 
 										<i class="fa fa-pen"></i>&nbsp;수정
-									</a>
+									</button>
 								</div>
 								
 								<!-- Toast UI grid Start -->
@@ -240,17 +240,17 @@
                 enctype : 'multipart/form-data',
                 processData : false,
                 contentType : false,
-                dataType : 'json',
+                dataType : 'html',
                 cache : false,
 				success: function(data){
-					console.log(data);
+					location.href = document.referrer;
+					history.back();
 				},
 				error: function(xhr, status, error){
 					console.log(error);
 				}
 			});
 		});
-		
 		
 		$(document).ready(function(){
 			$("#input_file").bind('change', function(){
@@ -501,7 +501,7 @@
 		    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 		        results = regex.exec(location.search);
 		    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
+		} 
 		
 	</script>
 

@@ -14,7 +14,8 @@ public interface BoardDAO {
 	public void addBoard(Map<String, Object> params) throws Exception;
 	
 	//게시글 첨부파일 업로드
-	public void addBoardFile(Map<String, Object> params) throws Exception;
+	//public void addBoardFile(Map<String, Object> params) throws Exception;
+	public void addBoardFile(List<Map<String, Object>> parmas) throws Exception;
 	
 	//원본게시글 작성 업데이트
 	public void updateBoardNew() throws Exception;
@@ -32,7 +33,7 @@ public interface BoardDAO {
 	public void editBoard(BoardVO boardVO) throws Exception;
 	
 	//게시글 첨부파일 삭제
-	public void deleteBoardFile(int fileNo) throws Exception;
+	public void deleteBoardFile(List<Map<String, String>> deleteFileList) throws Exception;
 	
 	//게시글 삭제
 	public void deleteBoard(int boardNo) throws Exception;
