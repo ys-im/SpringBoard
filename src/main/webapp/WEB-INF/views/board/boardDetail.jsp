@@ -195,8 +195,11 @@
 		}
 		
 		function fnc_delete(){
-			var boardNo = getParameterByName("boardNo");
-			location.href="/deleteBoard.do?boardNo="+boardNo;
+			var result = confirm("이 글을 삭제하시겠습니까?");
+			if(result){
+				var boardNo = getParameterByName("boardNo");
+				location.href="/deleteBoard.do?boardNo="+boardNo;				
+			}
 		}
 		
 		/************************************************** file download */
