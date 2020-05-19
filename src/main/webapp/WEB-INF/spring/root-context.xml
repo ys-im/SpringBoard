@@ -35,5 +35,8 @@
 		<constructor-arg name="sqlSessionFactory"
 			ref="sqlSessionFactory" />
 	</bean>
-
+	
+	<bean id="filePath" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations" value="classpath*:springboard.properties"/>
+	</bean>
 </beans>

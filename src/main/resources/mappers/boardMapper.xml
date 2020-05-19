@@ -13,8 +13,8 @@
 		      , B.USER_ID
 		      , B.BOARD_NO
 		      , B.ORIGIN_NO
-		      , B.GROUP_LAYER
 		      , B.GROUP_SEQ
+		      , B.GROUP_LAYER
 		      , B.P_BOARD_NO
 		      , B.GROUP_PATH
 		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
@@ -31,9 +31,9 @@
 		</if>
 	</sql>
 	
-	<insert id="addBoard" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="boardNo">
-		INSERT INTO board(TITLE, CONTENTS, USER_ID)
-		VALUES(#{title}, #{contents} , #{userID})	
+	<insert id="addBoard" parameterType="com.giens.springboard.vo.BoardVO" useGeneratedKeys="true" keyProperty="boardNo">
+		INSERT INTO board(TITLE, CONTENTS, USER_ID, ORIGIN_NO, GROUP_SEQ, GROUP_LAYER, P_BOARD_NO, GROUP_PATH)
+		VALUES(#{boardVO.title}, #{boardVO.contents}, #{boardVO.userID}, #{boardVO.originNo}, #{boardVO.groupSeq}, #{boardVO.groupLayer}, #{boardVO.pBoardNo}, #{boardVO.groupPath})	
 		
 		<selectKey keyProperty="boardNo" resultType="Integer">
         	SELECT LAST_INSERT_ID()
@@ -46,6 +46,11 @@
 		    , ORIGIN_NO = BOARD_NO
 		WHERE ORIGIN_NO = 0
 	</update>
+	
+	<insert id="addBoardReply" parameterType="java.util.Map">
+		INSERT INTO board(TITLE, CONTENTS, USERID, ORIGIN_NO, GROUP_SEQ, GROUP_LAYER, GROUP_PATH, P_BOARD_NO)
+		VALUES(#{title}, #{contents}, #{userID}, #{originNo}, #{groupSeq}, #{groupLayer}, #{groupPath}, #{pBoardNo})
+	</insert>
 	
 	<insert id="addBoardFile" parameterType="java.util.List">
 		INSERT INTO board_file(
@@ -74,13 +79,14 @@
 		      , B.USER_ID
 		      , B.BOARD_NO 
 		      , B.ORIGIN_NO
-		      , B.GROUP_LAYER 
 		      , B.GROUP_SEQ 
+		      , B.GROUP_LAYER 
 		      , B.P_BOARD_NO 
 		      , B.GROUP_PATH 
 		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
 		FROM board B
 		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
+		ORDER BY B.BOARD_NO
 	</select>
 
 	<select id="fileList" parameterType="int" resultType="hashMap">

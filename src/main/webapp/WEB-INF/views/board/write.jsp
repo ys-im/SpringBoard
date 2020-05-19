@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!doctype html>
 <html>
 
@@ -90,6 +91,11 @@
 									</table>
 								</div>
 								<input type="hidden" id="boardNo" name="boardNo"/>
+								<input type="hidden" id="pBoardNo" name="pBoardNo" value="${writeInfo.pBoardNo}"/>
+								<input type="hidden" id="originNo" name="originNo" value="${writeInfo.originNo}"/>
+								<input type="hidden" id="groupSeq" name="groupSeq" value="${writeInfo.groupSeq}"/>
+								<input type="hidden" id="groupLayer" name="groupLayer" value="${writeInfo.groupLayer}"/>
+								<input type="hidden" id="groupPath" name="groupPath" value="${writeInfo.groupPath}"/>
 							</form>
 						</div>
 
@@ -158,7 +164,6 @@
 		$("#write").click(function(){			
 			var title = $("#title").val();
 			var userID = "테스트작성자";
-			var pBoardNo = getParameterByName("pBoardNo")*1;
 			var contents = editor.getValue();
 
 	        var uploadFileList = Object.keys(fileList);
@@ -171,7 +176,6 @@
             console.log(fileList);
             formData.append('title', title);
             formData.append('userID', userID);
-            formData.append('pBoardNo', pBoardNo);
             formData.append('contents', contents);
                         
 			//var data = {"title":title, "userID":userID, "pBoardNo":pBoardNo, "contents":contents, "formData":formData};
@@ -309,7 +313,7 @@
 					 * 'html', 'js', 'css', 'xml' ]) >= 0) { // 확장자 체크 alert("등록
 					 * 불가 확장자"); break;
 					 */
-		            if ($.inArray(ext, [ 'hwp', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'png', 'pdf', 'jpg', 'jpeg', 'gif', 'zip' ]) <= 0) {
+		            if ($.inArray(ext, [ 'hwp', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'png', 'pdf', 'jpg', 'jpeg', 'gif', 'zip' ]) < 0) {
 		                // 확장자 체크
 		                /*
 						 * alert("등록이 불가능한 파일 입니다."); break;

@@ -53,7 +53,6 @@ public class BoardController {
 	@RequestMapping(value = "/board.do", method = RequestMethod.GET)
 	public String getListBoard() throws Exception {
 		logger.info("board view");
-		
 		return "board/board";
 	}
 	
@@ -64,7 +63,24 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/writeView.do", method = RequestMethod.GET)
-	public String writeView() throws Exception {
+	public String writeView(int pBoardNo, Model model) throws Exception {		
+		int originNo = 0;
+		int groupSeq = 0;
+		int groupLayer = 0;
+		if(pBoardNo > 0) {
+			BoardVO vo = boardService.getBoard(pBoardNo).get(0);
+			originNo = Integer.parseInt(vo.getOriginNo());
+			groupSeq = Integer.parseInt(vo.getGroupSeq())+1;
+			groupLayer = Integer.parseInt(vo.getGroupLayer())+1;
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("originNo", originNo);
+		map.put("groupSeq", groupSeq);
+		map.put("groupLayer", groupLayer);
+		map.put("pBoardNo", pBoardNo);
+		
+		model.addAttribute("writeInfo", map);
+		
 		return "board/write";
 	}
 	
@@ -78,25 +94,27 @@ public class BoardController {
 	public String addBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest) throws Exception {
 		logger.info("add board");
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("title", boardVO.getTitle());
-		params.put("userID", boardVO.getUserID());
-		params.put("contents", boardVO.getContents());
-		params.put("pBoardNo", boardVO.getpBoardNo());
+		params.put("boardVO", boardVO);		
 		
 		//게시판 글 등록
+		
 		boardService.addBoard(params);
 		int boardNo = (int)params.get("boardNo");
 		
 		int pBoardNo = Integer.parseInt(boardVO.getpBoardNo());
 		if(pBoardNo == 0) {
 			boardService.updateBoardNew();
+		}else {
+			
 		}
 				
 		//게시판 글에 첨부파일 등록
 		List<Map<String, Object>> list = fileUtils.parseInsertFileInfo(boardNo, mpRequest);
-		boardService.addBoardFile(list);
+		if(list.size() > 0) {
+			boardService.addBoardFile(list);
+		}
 		
-		return "redirect:/writeView.do";
+		return "redirect:/board.do";
 	}
 	
 	/** 
@@ -207,8 +225,8 @@ public class BoardController {
 			for(int i = 0; i < deleteFileList.size(); i++) {
 				deleteFileNoList.add(deleteFileList.get(i).get("fileNo"));
 			}
-			System.out.println(deleteFileList);
-			System.out.println(deleteFileNoList);
+			//System.out.println(deleteFileList);
+			//System.out.println(deleteFileNoList);
 			
 			for(int i = 0; i < modifiedFileNoList.size(); i++) {
 				if(deleteFileNoList.contains(modifiedFileNoList.get(i))) {

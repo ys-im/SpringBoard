@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!doctype html>
 <html>
 
@@ -73,6 +74,7 @@
 								<div class="code-html contents">
 									<div id="grid"></div>
 								</div>
+								<input type="hidden" id="page" name="page" value="${page}"/>
 							</div>
 						</div>
 					</div>
@@ -178,6 +180,7 @@
 		/************************************************** grid 양식 */	
 		var grid = new tui.Grid({
 			el : document.getElementById('grid'),
+			data : dataSource,
 			scrollX : false,
 			scrollY : false,
 			columns : [ {
@@ -212,20 +215,22 @@
 			}],
 			 
 			pageOptions : {
-				useClient : true,
 				perPage : 20
 			}
+	
 		}); 
-		
-		/************************************************** grid 데이터 */		
+		grid.readData(1);
+		/************************************************** grid 데이터 */	
+		var currentPage;
 		$(document).ready(function() {	
+			
 			$.ajax({
 				url : "/ajax/toastBoardList.do",
-				method : "POST",
+				method : "GET",
 				async: false,
 				dataType : "json",
 				success : function(result) {
-					grid.resetData(result);					
+					grid.resetData(result);
 				},
 				error : function(xhr, status, error){
 					console.log("code: "+xhr.status);
@@ -233,6 +238,13 @@
 					console.log("error: "+error);
 				}
 			});
+		}); 
+		
+		/************************************************ grid pagination */
+		var pagination = grid.getPagination();
+		pagination.on('beforeMove', function(ev){
+			currentPage = ev.page;		
+			console.log(currentPage);
 		});
 	</script>
 

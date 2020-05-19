@@ -50,7 +50,7 @@
 									<button class="btn btn-primary" onclick="fnc_delete()"> 
 										<i class="fa fa-trash-alt"></i>&nbsp;삭제
 									</button>
-									<button class="btn btn-primary mr-0 ml-auto" id="write"> 
+									<button class="btn btn-primary mr-0 ml-auto" onclick="fnc_writeReply()"> 
 										<i class="fa fa-pen"></i>&nbsp;답글 작성
 									</button>
 								</div>
@@ -189,17 +189,25 @@
 			});
 		};
 		
+		/************************************************* 게시글 수정페이지 이동 */
 		function fnc_editView(){
 			var boardNo = getParameterByName("boardNo");
 			location.href='/editView.do?boardNo='+boardNo;
 		}
 		
+		/************************************************** 게시글 삭제 */
 		function fnc_delete(){
 			var result = confirm("이 글을 삭제하시겠습니까?");
 			if(result){
 				var boardNo = getParameterByName("boardNo");
 				location.href="/deleteBoard.do?boardNo="+boardNo;				
 			}
+		}
+		
+		/************************************************** 답글작성페이지 이동 */
+		function fnc_writeReply(){
+			var boardNo = getParameterByName("boardNo");
+			location.href="/writeView.do?pBoardNo="+boardNo;
 		}
 		
 		/************************************************** file download */
