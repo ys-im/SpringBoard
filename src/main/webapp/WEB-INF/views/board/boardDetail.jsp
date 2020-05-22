@@ -94,7 +94,10 @@
 			<!-- download form -->
 			<section id="container">
 				<form name="readForm" role="form" method="post">
-					<input type="hidden" id="FILE_NO" name="FILE_NO" value="">
+					<input type="hidden" id="page" name="page" value="${searchCriteria.page}">
+					<input type="hidden" id="perPageNum" name="perPageNum" value="${searchCriteria.perPageNum}">
+					<input type="hidden" id="searchType" name="searchType" value="${searchCriteria.searchType}">
+					<input type="hidden" id="keyword" name="keyword" value="${searchCriteria.keyword}">
 				</form>
 			</section>
 			
@@ -132,6 +135,16 @@
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
 	<script >   
+		var today = new Date();
+		var year = today.getFullYear();
+		var month = today.getMonth()+1;
+		if(month.toString().length === 1){
+			month = '0'+month;
+		}
+		var date = today.getDate();
+		today = year+"-"+month+"-"+date;
+	
+		var title;
 		/************************************************** viewer 데이터 */	
 		window.onload = function() {
 			var boardNo = getParameterByName("boardNo");
@@ -143,7 +156,7 @@
 				data : data,
 				dataType : "json",
 				success : function(result) {
-					var title = result[0].title;
+					title = result[0].title;
 					var contents = result[0].contents;
 					var regDate = result[0].regDate;
 					for(var i in result){						
@@ -152,11 +165,22 @@
 									+'<div class="form-inline">';
 							var replyCnt = result[i].replyCnt;
 							var boardNo = result[i].boardNo;
+							var fileCnt = result[i].fileCnt;
+							var replyRegDate = result[i].regDate.substr(0, 10);
+							
 							if(replyCnt > 0){
-								str += '<a href="#" onclick="fnc_replyClick('+boardNo+');" id="replyTitle_'+boardNo+'"><b>'+result[i].title+'</b></a>'
+								str += '<a href="/boardDetail.do?boardNo='+boardNo+'" id="replyTitle_'+boardNo+'"><b>'+result[i].title+'</b></a>'
 										+'&nbsp&nbsp<b>['+replyCnt+']</b>';									
 							}else{
-								str += '<b id="replyTitle_'+boardNo+'">'+result[i].title+'</b>';
+								str += '<a href="/boardDetail.do?boardNo='+boardNo+'" id="replyTitle_'+boardNo+'">'+result[i].title+'</b>';
+							}
+							
+							if(fileCnt > 0){
+								str += "&nbsp;<i class='fas fa-paperclip'></i>";
+							}
+							
+							if(today == replyRegDate){
+								str += "&nbsp;<img src='/resources/img/icons/icon_new_cmt.gif' alt='새글'>";
 							}
 							str += '<a class="mr-0 ml-auto">'+result[i].userID+'&nbsp&nbsp'+result[i].regDate+'</a>'
 									+'</div><hr>'
@@ -173,6 +197,9 @@
 					}
 					$("#title").html(title);
 					$("#regDate").html(regDate);
+					if(regDate.substr(0, 10) == today){
+						$("#title").html(title+"&nbsp;<img src='/resources/img/icons/icon_new_cmt.gif' alt='새글'>");
+					}
 					$("#userName").html("작성자");
 					
 					/*************************************************************** viewwer  */
@@ -207,7 +234,7 @@
 		/************************************************** 답글작성페이지 이동 */
 		function fnc_writeReply(){
 			var boardNo = getParameterByName("boardNo");
-			location.href="/writeView.do?pBoardNo="+boardNo;
+			location.href="/writeView.do?pBoardNo="+boardNo+"&title="+title;
 		}
 		
 		/************************************************** file download */

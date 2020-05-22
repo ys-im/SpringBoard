@@ -18,11 +18,13 @@ public class BoardVO {
 	private String groupLayer;
 	private String pBoardNo;
 	private String groupPath;
+	private String hit;
 	private String replyCnt;
+	private String fileCnt;
 	
 	//Constructor		
 	public BoardVO(String rowNo, String title, String contents, String regDate, String userID, String boardNo, String originNo,
-			String groupSeq, String groupLayer, String pBoardNo, String groupPath, String replyCnt) {
+			String groupSeq, String groupLayer, String pBoardNo, String groupPath, String hit, String replyCnt, String fileCnt) {
 		super();
 		this.rowNo = rowNo;
 		this.title = title;
@@ -35,7 +37,9 @@ public class BoardVO {
 		this.groupLayer = groupLayer;
 		this.pBoardNo = pBoardNo;
 		this.groupPath = groupPath;
+		this.hit = hit;
 		this.replyCnt = replyCnt;
+		this.fileCnt = fileCnt;
 	}
 	
 	//Getter/Setter
@@ -127,6 +131,14 @@ public class BoardVO {
 		this.groupPath = groupPath;
 	}
 	
+	public String getHit() {
+		return hit;
+	}
+
+	public void setHit(String hit) {
+		this.hit = hit;
+	}
+
 	public String getReplyCnt() {
 		return replyCnt;
 	}
@@ -134,15 +146,21 @@ public class BoardVO {
 	public void setReplyCnt(String replyCnt) {
 		this.replyCnt = replyCnt;
 	}
+	
+	public String getFileCnt() {
+		return fileCnt;
+	}
+
+	public void setFileCnt(String fileCnt) {
+		this.fileCnt = fileCnt;
+	}
 
 	@Override
 	public String toString() {
 		return "BoardVO [rowNo=" + rowNo + ", title=" + title + ", contents=" + contents + ", regDate=" + regDate
 				+ ", userID=" + userID + ", boardNo=" + boardNo + ", originNo=" + originNo + ", groupSeq=" + groupSeq
-				+ ", groupLayer=" + groupLayer + ", pBoardNo=" + pBoardNo + ", groupPath=" + groupPath + ", replyCnt="
-				+ replyCnt + "]";
+				+ ", groupLayer=" + groupLayer + ", pBoardNo=" + pBoardNo + ", groupPath=" + groupPath + ", hit=" + hit
+				+ ", replyCnt=" + replyCnt + ", fileCnt=" + fileCnt + "]";
 	}
-	
-	
 	
 }

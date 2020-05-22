@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +20,23 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.giens.springboard.service.Board.BoardService;
 import com.giens.springboard.util.FileUtils;
 import com.giens.springboard.vo.BoardVO;
+import com.giens.springboard.vo.Criteria;
+import com.giens.springboard.vo.PageMaker;
+import com.giens.springboard.vo.SearchCriteria;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,7 +60,8 @@ public class BoardController {
 	 */
 	@RequestMapping(value = "/board.do", method = RequestMethod.GET)
 	public String getListBoard() throws Exception {
-		logger.info("board view");
+		logger.info("board view");		
+		
 		return "board/board";
 	}
 	
@@ -63,21 +72,26 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/writeView.do", method = RequestMethod.GET)
-	public String writeView(int pBoardNo, Model model) throws Exception {		
+	public String writeView(int pBoardNo, String title, Model model) throws Exception {		
 		int originNo = 0;
 		int groupSeq = 0;
 		int groupLayer = 0;
+		int replyCnt = 0;
 		if(pBoardNo > 0) {
 			BoardVO vo = boardService.getBoard(pBoardNo).get(0);
 			originNo = Integer.parseInt(vo.getOriginNo());
-			groupSeq = Integer.parseInt(vo.getGroupSeq())+1;
+			groupSeq = Integer.parseInt(vo.getGroupSeq());
 			groupLayer = Integer.parseInt(vo.getGroupLayer())+1;
+			replyCnt = Integer.parseInt(vo.getReplyCnt());
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
+		title = "  Re : "+title;
+		map.put("title", title);
 		map.put("originNo", originNo);
 		map.put("groupSeq", groupSeq);
 		map.put("groupLayer", groupLayer);
 		map.put("pBoardNo", pBoardNo);
+		map.put("replyCnt", replyCnt);		
 		
 		model.addAttribute("writeInfo", map);
 		
@@ -104,8 +118,13 @@ public class BoardController {
 		int pBoardNo = Integer.parseInt(boardVO.getpBoardNo());
 		if(pBoardNo == 0) {
 			boardService.updateBoardNew();
-		}else {
-			
+		}else {			
+			int replyCount = Integer.parseInt(boardVO.getReplyCnt());
+			Map<String, Object> updateReplyParams = new HashMap<String, Object>();
+			updateReplyParams.put("boardNo", boardNo);
+			updateReplyParams.put("pBoardNo", pBoardNo);
+			updateReplyParams.put("replyCount",replyCount);
+			boardService.updateBoardReply(updateReplyParams);
 		}
 				
 		//게시판 글에 첨부파일 등록
@@ -124,11 +143,12 @@ public class BoardController {
 	 * @reference AjaxController.java -> ajaxBoardDetail(int boardNo)
 	 */
 	@RequestMapping(value = "/boardDetail.do", method = RequestMethod.GET)
-	public String getBoard(int boardNo, Model model) throws Exception {
+	public String getBoard(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
 		logger.info("get board detail");
-		
+		boardService.updateBoardHit(boardNo);
 		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
 		model.addAttribute("fileList", fileList);
+		model.addAttribute("searchCriteria", searchCriteria);
 		
 		return "board/boardDetail";
 	}
@@ -165,7 +185,7 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/editView.do", method = RequestMethod.GET)
-	public String editView(int boardNo, Model model) throws Exception {
+	public String editView(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
 		logger.info("edit view");
 		
 		List<BoardVO> boardVO = boardService.getBoard(boardNo);
@@ -173,7 +193,8 @@ public class BoardController {
 		
 		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
 		model.addAttribute("fileList", fileList);
-
+		model.addAttribute("searchCriteria", searchCriteria);
+		
 		return "board/edit";
 	}
 	
@@ -196,7 +217,9 @@ public class BoardController {
 	 * @reference
 	 */
 	@RequestMapping(value="/edit.do", method = RequestMethod.POST)
-	public String editBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest) throws Exception {
+	public String editBoard(BoardVO boardVO, MultipartHttpServletRequest mpRequest, 
+			 @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, RedirectAttributes rttr) throws Exception {
+		
 		logger.info("edit board");			
 
 		int boardNo = Integer.parseInt(boardVO.getBoardNo());
@@ -253,6 +276,11 @@ public class BoardController {
 		//게시글 수정
 		boardService.editBoard(boardVO);
 		
+		rttr.addAttribute("page", searchCriteria.getPage());
+		rttr.addAttribute("perPageNum", searchCriteria.getPerPageNum());
+		rttr.addAttribute("searchType", searchCriteria.getSearchType());
+		rttr.addAttribute("keyword", searchCriteria.getKeyword());
+		
 		return "redirect:/boardDetail.do?boardNo="+boardNo;
 	}
 	
@@ -263,7 +291,9 @@ public class BoardController {
 	 * @reference
 	 */
 	@RequestMapping(value="/deleteBoard.do")
-	public String deleteBoard(int boardNo) throws Exception {
+	public String deleteBoard(int boardNo, 
+			 @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
+		
 		logger.info("delete board");
 		
 		//게시글 삭제
@@ -294,7 +324,12 @@ public class BoardController {
 				//파일 경로 + 저장된 파일명 까지 가져왔으므로 file.isDirectory() 생략
 				file.delete();
 			}
-		}		
+		}	
+		
+		model.addAttribute("page", searchCriteria.getPage());
+		model.addAttribute("perPageNum", searchCriteria.getPerPageNum());
+		model.addAttribute("searchType", searchCriteria.getSearchType());
+		model.addAttribute("keyword", searchCriteria.getKeyword());
 		
 		return "redirect:/board.do";
 	}

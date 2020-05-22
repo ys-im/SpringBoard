@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.giens.springboard.dao.Board.BoardDAO;
 import com.giens.springboard.util.FileUtils;
 import com.giens.springboard.vo.BoardVO;
+import com.giens.springboard.vo.Criteria;
+import com.giens.springboard.vo.SearchCriteria;
 
 
 @Service("boardService")
@@ -25,8 +27,13 @@ public class BoardServiceImpl implements BoardService{
 	private BoardDAO boardDAO;
 	
 	@Override
-	public List<BoardVO> getBoardlist() throws Exception {
-		return boardDAO.getBoardlist();
+	public List<BoardVO> getBoardlist(SearchCriteria searchCriteria) throws Exception {
+		return boardDAO.getBoardlist(searchCriteria);
+	}
+	
+	@Override
+	public int countBoardList(SearchCriteria searchCriteria) throws Exception {
+		return boardDAO.countBoardList(searchCriteria);
 	}
 	
 	@Override
@@ -43,12 +50,23 @@ public class BoardServiceImpl implements BoardService{
 	public void updateBoardNew() throws Exception {
 		boardDAO.updateBoardNew();
 	}
+	
+	@Override
+	public void updateBoardReply(Map<String, Object> params) throws Exception {
+		boardDAO.updateBoardReply(params);
+	}
 
 	@Override
 	public List<BoardVO> getBoard(int boardNo) throws Exception {
 		return boardDAO.getBoard(boardNo);
 	}
 
+	//게시글 조회수
+	@Override
+	public void updateBoardHit(int boardNo) throws Exception {
+		boardDAO.updateBoardHit(boardNo);
+	}
+		
 	@Override
 	public List<Map<String, Object>> getBoardFileList(int boardNo) throws Exception {
 		return boardDAO.getBoardFileList(boardNo);

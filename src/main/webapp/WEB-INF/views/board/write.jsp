@@ -58,7 +58,7 @@
 								<div class="form-group row">
 									<div class="form-inline col-sm-1">제목</div> 
 									<div class="col-sm-8">
-										<input type="text" id="title" name="title" class="form-control" />
+										<input type="text" id="title" name="title" class="form-control" value="${writeInfo.title}" />
 									</div>
 									<button class="btn btn-primary mr-3 ml-auto" id="write"> 
 										<i class="fa fa-pen"></i>&nbsp;작성
@@ -96,6 +96,7 @@
 								<input type="hidden" id="groupSeq" name="groupSeq" value="${writeInfo.groupSeq}"/>
 								<input type="hidden" id="groupLayer" name="groupLayer" value="${writeInfo.groupLayer}"/>
 								<input type="hidden" id="groupPath" name="groupPath" value="${writeInfo.groupPath}"/>
+								<input type="hidden" id="replyCnt" name="replyCnt" value="${writeInfo.replyCnt}"/>
 							</form>
 						</div>
 

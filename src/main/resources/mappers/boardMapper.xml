@@ -5,32 +5,48 @@
 <mapper namespace="boardMapper">
 
 	<!-- <select id="boardList" resultType="com.giens.springboard.vo.BoardVO"> -->
-	<select id="boardList" parameterType="String" resultType="com.giens.springboard.vo.BoardVO">
+	<!-- 페이지 적용 게시글 목록 -->
+	<select id="boardList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.BoardVO">
 		SELECT @ROWNUM:=@ROWNUM-1 as ROWNUM
-			  , B.TITLE
-		      , B.CONTENTS
-		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d') as REG_DATE
-		      , B.USER_ID
-		      , B.BOARD_NO
-		      , B.ORIGIN_NO
-		      , B.GROUP_SEQ
-		      , B.GROUP_LAYER
-		      , B.P_BOARD_NO
-		      , B.GROUP_PATH
-		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
-		FROM board B, (SELECT @ROWNUM := (SELECT COUNT(0) FROM board)+1) TMP
-		WHERE 1=1
+		  , B.TITLE
+	      , B.CONTENTS
+	      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d') as REG_DATE
+	      , B.USER_ID
+	      , B.BOARD_NO
+	      , B.ORIGIN_NO
+	      , B.GROUP_SEQ
+	      , B.GROUP_LAYER
+	      , B.P_BOARD_NO
+	      , B.GROUP_PATH
+	      , B.HIT
+	      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
+	      , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as FILE_CNT
+		FROM board B, 
+			(SELECT @ROWNUM := (SELECT COUNT(0) FROM board WHERE 1=1 <include refid="searchOption"/>)+1-#{rowStart}) TMP
+  		WHERE 1=1
 			<include refid="searchOption"></include>
-  		ORDER BY B.ORIGIN_NO DESC
+  		ORDER BY B.ORIGIN_NO DESC, B.GROUP_PATH ASC
+  		LIMIT #{rowStart}, #{perPageNum}
 	</select>
 	
+	<!-- 총 게시글 수 -->
+	<select id="countBoardList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="Integer">
+		SELECT count(*)
+      	FROM board
+      	WHERE 1=1
+      		<include refid="searchOption"></include>
+	</select>	
+	
+	<!-- 검색옵션 -->
 	<sql id="searchOption">
 		<if test="searchType != null">
-			<if test="searchType == title">AND B.TITLE LIKE '%'||#{keyword}||'%'</if>
-			<if test="searchType == userID">AND B.USER_ID LIKE '%'||#{keyword}||'%'</if>
+			<if test="searchType == 'title'.toString()">AND TITLE LIKE CONCAT('%',#{keyword},'%')</if>
+			<if test="searchType == 'userID'.toString()">AND USER_ID LIKE CONCAT('%',#{keyword},'%')</if>
 		</if>
 	</sql>
 	
+	
+	<!-- 게시글 등록 -->
 	<insert id="addBoard" parameterType="com.giens.springboard.vo.BoardVO" useGeneratedKeys="true" keyProperty="boardNo">
 		INSERT INTO board(TITLE, CONTENTS, USER_ID, ORIGIN_NO, GROUP_SEQ, GROUP_LAYER, P_BOARD_NO, GROUP_PATH)
 		VALUES(#{boardVO.title}, #{boardVO.contents}, #{boardVO.userID}, #{boardVO.originNo}, #{boardVO.groupSeq}, #{boardVO.groupLayer}, #{boardVO.pBoardNo}, #{boardVO.groupPath})	
@@ -40,6 +56,7 @@
     	</selectKey>	
 	</insert>
 	
+	<!-- 원본 게시글일 경우 -->
 	<update id="updateBoardNew">
 		UPDATE board
 		SET GROUP_PATH = CONCAT(CAST(BOARD_NO as CHAR), '-')
@@ -47,11 +64,37 @@
 		WHERE ORIGIN_NO = 0
 	</update>
 	
-	<insert id="addBoardReply" parameterType="java.util.Map">
-		INSERT INTO board(TITLE, CONTENTS, USERID, ORIGIN_NO, GROUP_SEQ, GROUP_LAYER, GROUP_PATH, P_BOARD_NO)
-		VALUES(#{title}, #{contents}, #{userID}, #{originNo}, #{groupSeq}, #{groupLayer}, #{groupPath}, #{pBoardNo})
-	</insert>
+	<!-- 원본게시글에 대한 답글일 경우 -->
+	<update id="updateBoardReply" parameterType="hashmap">		
+		<selectKey keyProperty="groupSeq,groupPath" resultType="hashmap" order="BEFORE">
+			<choose>
+				<when test="replyCount > 0">				
+					SELECT (MAX(B.GROUP_SEQ)+1) as groupSeq
+						, CONCAT(
+							(SELECT GROUP_PATH FROM BOARD WHERE BOARD_NO = #{pBoardNo})
+							, 1000-(MAX(B.GROUP_SEQ)+1)
+							, '-'
+						) as groupPath
+					FROM BOARD B
+					WHERE P_BOARD_NO = #{pBoardNo}
+					GROUP BY P_BOARD_NO
+				</when>
+				<otherwise>
+					SELECT 1 as groupSeq
+						, CONCAT(GROUP_PATH, '999-') as groupPath 
+					FROM BOARD
+					WHERE BOARD_NO = #{pBoardNo}
+				</otherwise>
+			</choose>	
+		</selectKey>
+		
+		UPDATE BOARD
+		SET GROUP_PATH = #{groupPath}
+			, GROUP_SEQ = #{groupSeq}
+		WHERE BOARD_NO = #{boardNo}
+	</update>	
 	
+	<!-- 첨부파일정보 등록 -->
 	<insert id="addBoardFile" parameterType="java.util.List">
 		INSERT INTO board_file(
 			FILE_NAME
@@ -71,6 +114,7 @@
 		</foreach>
 	</insert>
 	
+	<!-- 게시글 조회 -->
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
 		SELECT "" as ROWNUM
 			  , B.TITLE 
@@ -83,12 +127,22 @@
 		      , B.GROUP_LAYER 
 		      , B.P_BOARD_NO 
 		      , B.GROUP_PATH 
-		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
+		      , B.HIT
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
+      		  , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as FILE_CNT
 		FROM board B
 		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
 		ORDER BY B.BOARD_NO
 	</select>
-
+	
+	<!-- 게시글 조회수 -->
+	<update id="boardHit" parameterType="int">
+		UPDATE BOARD
+		SET HIT = HIT + 1
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<!-- 게시글 첨부파일 목록 조회 -->
 	<select id="fileList" parameterType="int" resultType="hashMap">
 		SELECT FILE_NO
 			, FILE_NAME
@@ -99,6 +153,7 @@
 		WHERE BOARD_NO = #{boardNo}
 	</select>
 	
+	<!-- 게시글 첨부파일 조회(단일) -->
 	<select id="file" parameterType="hashMap" resultType="hashMap">
 		SELECT STORED_FILE_NAME
 			, FILE_NAME
@@ -107,6 +162,7 @@
 		WHERE FILE_NO = #{FILE_NO}
 	</select>
 	
+	<!-- 게시글 수정 -->
 	<update id="editBoard" parameterType="com.giens.springboard.vo.BoardVO">
 		UPDATE BOARD
 			SET TITLE = #{title}
@@ -116,6 +172,14 @@
 		WHERE BOARD_NO = #{boardNo}
 	</update>
 	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		DELETE
+		FROM BOARD
+		WHERE BOARD_NO = #{boardNo}
+	</delete>
+	
+	<!-- 첨부파일 삭제 -->
 	<delete id="deleteBoardFile" parameterType="java.util.List">
 		DELETE
 		FROM BOARD_FILE
@@ -124,12 +188,6 @@
 				FILE_NO = #{item.fileNo}
 			</foreach>
 		</where>
-	</delete>
-	
-	<delete id="deleteBoard" parameterType="int">
-		DELETE
-		FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
 	</delete>
 </mapper> 
 
