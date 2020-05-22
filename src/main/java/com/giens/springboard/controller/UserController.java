@@ -1,22 +1,36 @@
 package com.giens.springboard.controller;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.giens.springboard.service.User.UserService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
 public class UserController {
+	
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
+	@Inject
+	UserService userService;
+	
 	@RequestMapping(value = "/loginView.do", method = RequestMethod.GET)
+	public String loginView() {
+		logger.info("login view");
+		return "login";
+	}
+	
+	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
 	public String login() {
 		logger.info("login");
-		return "login";
+		return "forword:/board.do";
 	}
 	
 	@RequestMapping(value="/user.do")

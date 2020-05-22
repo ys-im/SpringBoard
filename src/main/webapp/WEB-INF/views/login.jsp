@@ -38,7 +38,7 @@
 				<div class="bg-login-image js-tilt" data-tilt>
 					<img src="/resources/img/img-01.png" alt="IMG">
 				</div>
-				<form class="user" name="loginForm" method="get" action="/board.do">
+				<form class="user" name="loginForm" method="get" action="/login.do">
 					<div class="text-center">
 						<h2>로그인</h2>
 					</div>
