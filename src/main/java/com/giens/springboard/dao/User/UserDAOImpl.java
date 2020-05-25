@@ -26,4 +26,10 @@ public class UserDAOImpl implements UserDAO{
 		return null;
 	}
 
+	//아이디 중복 체크
+	@Override
+	public int idCheck(String userID) throws Exception {
+		return sqlSession.selectOne("userMapper.idCheck", userID);
+	}
+
 }

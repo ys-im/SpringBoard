@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.giens.springboard.service.User.UserService;
 
@@ -51,9 +52,19 @@ public class UserController {
 	public String addUser(/*여기에 받을 파라미터 입력하면 됨. BoardController/addBoard 참고*/) throws Exception {
 		logger.info("user regist");
 		
-		return "redirect:/user.do";
+		return "";
+		//return "redirect:/user.do";
 	}
-	
+
+	//아이디 중복 체크
+	@RequestMapping(value="/idCheck.do")
+	@ResponseBody
+	public int idCheck(String userID) throws Exception {
+		logger.info("id check");
+		int idCheckValue = userService.idCheck(userID);
+		System.out.println(idCheckValue);
+		return idCheckValue;
+	}
 	@RequestMapping(value="/loginHistory.do")
 	public String loginHistoryList(String userID) throws Exception{
 		logger.info("login history");

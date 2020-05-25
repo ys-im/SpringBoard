@@ -58,9 +58,10 @@
 										<div class="form-inline col-sm-2">아이디</div>	
 										<div class="col-sm-8">
 											<input type="text" class="form-control form-control-user"
-												id="userID" placeholder="ID">
+												id="userID" placeholder="ID">												
+											<span id="idCheckMessage" class="small">아이디 중복체크 검사 메시지</span>
 										</div>
-										<a class="btn btn-primary mr-3 ml-auto" href="#" id="idCheck">중복검사</a><br>
+										<button type="button" class="btn btn-primary mr-3 ml-auto" id="idCheck">중복검사</button><br>
 									</div>
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">비밀번호</div>
@@ -75,7 +76,7 @@
 										<div class="col-sm-10">
 											<input type="password" class="form-control form-control-user" 
 												id="repeatPassword" oninput="checkPwd()" placeholder="Repeat Password">
-											<span id="repeatPasswordMessage">비밀번호 일치여부 메시지</span>
+											<span id="repeatPasswordMessage" class="small">비밀번호 일치여부 메시지</span>
 										</div>
 									</div>
 
@@ -153,7 +154,25 @@
 	<!-- Page level custom scripts -->
 	<script>
 		$("#idCheck").click(function(){
-			//여기에 중복검사 체크 하는 코드 넣으시면 됩니다.
+			var idCheckValue;
+			$.ajax({
+				url : "/idCheck.do?userID="+$("#userID").val(),
+				method: "GET",
+				dataType: "json",
+				success : function(result) {
+					idCheckValue = result;
+					if(idCheckValue == 0){						
+						$("#idCheckMessage").text("사용 가능한 ID 입니다.");
+						document.getElementById("idCheckMessage").style.color = "green";
+					}else{
+						$("#idCheckMessage").text("사용할 수 없는 ID 입니다.");
+						document.getElementById("idCheckMessage").style.color = "red";
+					}
+				},
+				error : function(xhr, status, error){
+					console.log(error);
+				}
+			});
 		});
 		
 		function checkPwd(){

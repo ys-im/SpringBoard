@@ -224,11 +224,20 @@
 		
 		/************************************************** 게시글 삭제 */
 		function fnc_delete(){
-			var result = confirm("이 글을 삭제하시겠습니까?");
-			if(result){
-				var boardNo = getParameterByName("boardNo");
-				location.href="/deleteBoard.do?boardNo="+boardNo;				
+			var result;
+			var replyListCount = $("#reply_1").length;
+			if(replyListCount > 0){
+				alert("'"+$("#title").text()+"' 에 답글이 있어 삭제할수 없습니다.");
+				return;
+			}else{
+				result = confirm("이 글을 삭제하시겠습니까?");
+				
+				if(result){
+					var boardNo = getParameterByName("boardNo");
+					location.href="/deleteBoard.do?boardNo="+boardNo;				
+				}
 			}
+			
 		}
 		
 		/************************************************** 답글작성페이지 이동 */
