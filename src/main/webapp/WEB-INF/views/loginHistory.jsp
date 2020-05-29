@@ -63,18 +63,19 @@
 										<option value="userName">이름</option>
 									</select> -->
 									<div class="mr-3">아이디 : </div>
-									<input type="search" class="form-control bg-light small"
+									<input type="search" id="search" class="form-control bg-light small"
 										placeholder="검색어를 입력하세요." aria-label="Search">
 									<div class="input-group-append">
-										<a class="btn btn-primary" href="/">
+										<button type="button" class="btn btn-primary" id="searchButton">
 											<i class="fas fa-search fa-sm"></i>
-										</a>
+										</button>
 									</div>
 								</div>
 								
 								<!-- Toast UI grid Start -->
 								<div class="code-html contents">
 									<div id="grid"></div>
+									<div id="pagination" class="tui-pagination"></div>
 								</div>
 								<!-- End of Toast UI grid-->		
 							</div>
@@ -119,15 +120,26 @@
 	
 	<!-- Page level custom scripts -->
 	<script>
+		/************************************************** 사용할 변수 선언 */
+		var dataSource;		
+		var pagiantion;
+		
+		var startPage = "${pageMaker.startPage}"*1;
+		var perPageNum = "${pageMaker.perPageNum}"*1;
+		var totalCount = "${pageMaker.totalCount}"*1;
+		
+		var searchTypeInfo = "userID";
+		var searchKeyword = $("#search").val();	
+	
 		/************************************************** class showDetail -> 제목 컬럼에 a tag 추가 */
 		class ShowDetail {
 			constructor(props){
 				this.props = props;
 				const aTag = document.createElement('a');
-				let uID = props.value;
+				let userID = props.value;
 								
-				aTag.innerHTML = uID;
-				aTag.href = "#";
+				aTag.innerHTML = userID;
+				aTag.href = "/loginHistoryList.do?page="+startPage+"&perPage="+perPageNum+"serachType=userID&keyword="+userID;
 				aTag.className = "uID";
 				aTag.style = "margin-left: 10px";
 				
@@ -174,11 +186,16 @@
 		});
 		
 		/************************************************** grid 양식 */	
+		
+		if(perPageNum <= 0 || perPageNum > 100){
+			perPageNum = 20;
+		}
+		
 		var grid = new tui.Grid({
 			el : document.getElementById('grid'),
 			scrollX : false,
 			scrollY : false,
-			columns : [ {
+			columns : [{
 				header : 'No.',
 				name : 'rowNo',
 				width : '50',
@@ -204,26 +221,95 @@
 				sortable : true
 			}, {
 				header : '접속 IP',
-				name : 'ip',
+				name : 'ipAddress',
 				align : 'center'
 			}],
 			
-			rowHeaders: ['checkbox'],
-			 
-			pageOptions : {
-				useClient : true,
-				perPage : 20
+			rowHeaders: ['checkbox']
+		});
+		
+		$(document).ready(function(){
+			fnc_readGridData(startPage, perPageNum);
+		});
+		
+		$("#searchButton").click(function(){
+			searchTypeInfo = "userID";
+			searchKeyword = $("#search").val();
+			
+			fnc_readGridData(startPage, perPageNum);
+		});
+		
+		function fnc_readGridData(startPage, perPageNum){
+			$.ajax({
+				url : "/ajax/loginHistoryListCount.do",
+				method : "GET",
+				async : false,
+				data : {page:startPage, perPage:perPageNum, searchType:searchTypeInfo, keyword:searchKeyword},
+				dataType : "json",
+				success : function(result) {
+					totalCount = result.totalCount;
+				},
+				error : function(xhr, status, error){
+					console.log("code: "+xhr.status);
+					console.log("message: "+xhr.responseText);
+					console.log("error: "+error);
+				}
+			});
+			
+			$.ajax({				
+				url : "/ajax/loginHistoryList.do",
+				method : "GET",
+				async : false,
+				data : {page:startPage, perPage:perPageNum, searchType:searchTypeInfo, keyword:searchKeyword},
+				dataType : "json",
+				success : function(result) {
+					dataSource = result;
+				},
+				error : function(xhr, status, error){
+					console.log("code: "+xhr.status);
+					console.log("message: "+xhr.responseText);
+					console.log("error: "+error);
+				}
+			});	
+						
+			grid.resetData(dataSource);
+			
+			
+			pagination = new tui.Pagination('pagination', {
+				totalItems : totalCount,
+				itemsPerPage : 20,
+				visiblePages : 10,
+				firstItemClassName: 'tui-first-child',
+			    lastItemClassName: 'tui-last-child',
+			    template: {
+			    	page: '<a href="javascript;" class="tui-page-btn" onclick="fnc_readGridData({{page}}, '+perPageNum+')">{{page}}</a>',
+			        currentPage: '<strong class="tui-page-btn tui-is-selected">{{page}}</strong>',
+			        moveButton:
+			             '<a href="javascript;" class="tui-page-btn tui-{{type}}" onclick="fnc_getType(this, '+perPageNum+')">' +
+			                 '<span class="tui-ico-{{type}}">{{type}}</span>' +
+			             '</a>',
+			        disabledMoveButton:
+			             '<span class="tui-page-btn tui-is-disabled tui-{{type}}">' +
+			                 '<span class="tui-ico-{{type}}">{{type}}</span>' +
+			             '</span>'
+			     }
+			});
+		}
+		
+		function fnc_getType(obj, perPageNum){
+			var className = obj.className;
+			var movePage = pagination.getCurrentPage();
+			if(className === "tui-page-btn tui-next"){
+				fnc_readGridData(movePage+1, perPageNum);
+			}else if(className === "tui-page-btn tui-prev"){
+				fnc_readGridData(movePage-1, perPageNum);
+			}else if(className === "tui-page-btn tui-first"){
+				fnc_readGridData(1, perPageNum);
+			}else if(className === "tui-page-btn tui-last"){
+				var lastPage = Math.ceil(totalCount/perPageNum);
+				fnc_readGridData(lastPage, perPageNum);
 			}
-		});
-		
-		
-		/********************************************************** Custom */
-		grid.on('click', function(ev){
-			if(ev.columnName=="uesrID"){
-				var userID = grid.getValue(ev.rowKey, 'userID');
-				location.href="/loginHistory.do?userID="+userID;
-			}	
-		});
+		}
 		
 	</script>
 </body>

@@ -61,14 +61,14 @@
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">
 									<select name="searchOption" id="searchOption" class="form-control bg-light small mr-1">
 										<option value="userID">아이디</option>
-										<option value="userName">이름</option>
+										<option value="name">이름</option>
 									</select>
-									<input type="search" class="form-control bg-light small"
+									<input type="search" id="search" class="form-control bg-light small"
 										placeholder="검색어를 입력하세요." aria-label="Search">
 									<div class="input-group-append">
-										<a class="btn btn-primary" href="/">
+										<button type="button" class="btn btn-primary" id="searchButton">
 											<i class="fas fa-search fa-sm"></i>
-										</a>
+										</button>
 									</div>
 									
 									<a class="btn btn-primary mr-0 ml-auto" href="/registView.do"> 
@@ -79,6 +79,7 @@
 								<!-- Toast UI grid Start -->
 								<div class="code-html contents">
 									<div id="grid"></div>
+									<div id="pagination" class="tui-pagination"></div>
 								</div>
 								<!-- End of Toast UI grid-->		
 							</div>
@@ -123,17 +124,28 @@
 	
 	<!-- Page level custom scripts -->
 	<script>
-		/************************************************** class showDetail -> 제목 컬럼에 a tag 추가 */
+		/************************************************** 사용할 변수 선언 */
+		var dataSource;		
+		var pagiantion;
+		
+		var startPage = "${pageMaker.startPage}"*1;
+		var perPageNum = "${pageMaker.perPageNum}"*1;
+		var totalCount = "${pageMaker.totalCount}"*1;
+		
+		var searchTypeInfo;
+		var searchKeyword;	
+	
+		/************************************************** renderer class */
+		//제목 컬럼에 a tag 추가
 		class ShowDetail {
 			constructor(props){
 				this.props = props;
 				const aTag = document.createElement('a');
-				let title = props.value;
-								
-				aTag.innerHTML = title;
-				aTag.href = "#";
-				aTag.className = "boardTitle";
+				let userID = props.value;	
+				
+				aTag.innerHTML = userID;
 				aTag.style = "margin-left: 10px";
+				aTag.href = "/userDetail.do?userID="+userID;
 				
 				this.aTag = aTag;
 				this.render(props);
@@ -144,15 +156,50 @@
 			}
 			
 			render(props){
-				this.aTag.title = String(props.value);
+				this.aTag.value = String(props.value);
 			}
 		}
-		
+		//사용자 삭제 버튼
+		class UserDelete{
+			constructor(props){
+				this.props = props;				
+				const el = document.createElement("button");
+				let delFlag = props.value;
+				let userID = props.grid.getValue(props.rowKey, "userID");
+			
+				el.style="font-size : 0.8rem;";		
+				el.className = "btn btn-primary mt-1 mb-1";
+				el.innerHTML = "삭제";	
+				
+				el.addEventListener('click', function(){
+					if(confirm("사용자 '"+userID+"' 를 삭제하시겠습니까?")){							
+						location.href = "/userDelete.do?userID="+userID;
+					}
+				});
+				
+				
+				this.el = el;
+				this.render(props);
+			}
+			
+			getElement(){
+				return this.el;
+			}
+			
+			render(props){
+				this.el.value = String(props.value);
+			}
+		}
 		/************************************************** grid 디자인 */
 		tui.Grid.applyTheme('default', {
 			outline : {
 				border : '#C0C0C0',
 				showVerticalBorder : true
+			},
+			area : {
+				header : {
+					background : "#C0C0C0"
+				}
 			},
 			cell : {
 				normal : {
@@ -174,75 +221,140 @@
 					showVerticalBorder : true,
 					showHorizontalBorder : true
 				}
-			}
+			}			
 		});
 		
 		/************************************************** grid 양식 */	
+		
+		if(perPageNum <= 0 || perPageNum > 100){
+			perPageNum = 20;
+		}
+		
 		var grid = new tui.Grid({
 			el : document.getElementById('grid'),
 			scrollX : false,
 			scrollY : false,
-			columns : [ {
-				header : 'No.',
-				name : 'rowNo',
-				width : '50',
-				minWidth : '30',
-				align : 'center'
-			}, {				
+			columns : [ {				
 				header : '사용자 이름',
-				name : 'userName',
+				name : 'name',
 				align : 'center',			
+				sortable : true
+			}, {				
+				header : '사용자 ID',
+				name : 'userID',
+				align : 'center',
 				sortable : true,
-				onBeforeChange(ev) {
-		            console.log('Before change:' + ev);
-		            ev.stop();
-		          },
-		          onAfterChange(ev) {
-		            console.log('After change:' + ev);
-		          },
-		          editor: 'text',
 				renderer : {
 					type: ShowDetail
 				}
 			}, {				
-				header : '사용자 ID',
-				name : 'userID',
-				align : 'center',			
-				sortable : true
-			}, {				
-				header : '휴면 상태',
+				header : '활동 상태',
 				align : 'center',
 				name : 'active',
-				onBeforeChange(ev) {
-		            console.log('Before change:' + ev);
-		          },
-		          onAfterChange(ev) {
-		            console.log('After change:' + ev);
-		          },
-		          formatter: 'listItemText',
-		          editor: {
-		            type: 'select',
-		            options: {
-		              listItems: [
-		                { text: 'active', value: '1' },
-		                { text: 'deactive', value: '2' }
-		              ]
-		            }
-		          }
+				sortable : true
 			}, {
 				header : '등록일',
 				name : 'regDate',
 				align : 'center',
 				sortable : true
+			}, {
+				header : '사용자 삭제',
+				name : 'delFlag',
+				align : 'center',
+				width : '100',
+				renderer : {
+					type: UserDelete
+				}
 			}],
 			
-			rowHeaders: ['checkbox'],
-			 
-			pageOptions : {
-				useClient : true,
-				perPage : 10
-			}
+			rowHeaders: [
+				//{type :'checkbox'},
+				{type :'rowNum'}
+			]
 		});
+		
+		$(document).ready(function(){
+			fnc_readGridData(startPage, perPageNum);
+		});
+		
+		$("#searchButton").click(function(){
+			searchTypeInfo = $("select option:selected").val();
+			searchKeyword = $("#search").val();
+			//console.log(searchTypeInfo+", "+searchKeyword);
+			fnc_readGridData(startPage, perPageNum);
+		});
+		
+		function fnc_readGridData(startPage, perPageNum){
+			$.ajax({
+				url : "/ajax/userListCount.do",
+				method : "GET",
+				async : false,
+				data : {page:startPage, perPage:perPageNum, searchType:searchTypeInfo, keyword:searchKeyword},
+				dataType : "json",
+				success : function(result) {
+					totalCount = result.totalCount;
+				},
+				error : function(xhr, status, error){
+					console.log("code: "+xhr.status);
+					console.log("message: "+xhr.responseText);
+					console.log("error: "+error);
+				}
+			});
+			
+			$.ajax({				
+				url : "/ajax/userList.do",
+				method : "GET",
+				async : false,
+				data : {page:startPage, perPage:perPageNum, searchType:searchTypeInfo, keyword:searchKeyword},
+				dataType : "json",
+				success : function(result) {
+					dataSource = result;
+				},
+				error : function(xhr, status, error){
+					console.log("code: "+xhr.status);
+					console.log("message: "+xhr.responseText);
+					console.log("error: "+error);
+				}
+			});	
+						
+			grid.resetData(dataSource);
+			
+			
+			pagination = new tui.Pagination('pagination', {
+				totalItems : totalCount,
+				itemsPerPage : 20,
+				visiblePages : 10,
+				firstItemClassName: 'tui-first-child',
+			    lastItemClassName: 'tui-last-child',
+			    template: {
+			    	page: '<a href="javascript;" class="tui-page-btn" onclick="fnc_readGridData({{page}}, '+perPageNum+')">{{page}}</a>',
+			        currentPage: '<strong class="tui-page-btn tui-is-selected">{{page}}</strong>',
+			        moveButton:
+			             '<a href="javascript;" class="tui-page-btn tui-{{type}}" onclick="fnc_getType(this, '+perPageNum+')">' +
+			                 '<span class="tui-ico-{{type}}">{{type}}</span>' +
+			             '</a>',
+			        disabledMoveButton:
+			             '<span class="tui-page-btn tui-is-disabled tui-{{type}}">' +
+			                 '<span class="tui-ico-{{type}}">{{type}}</span>' +
+			             '</span>'
+			     }
+			});
+		}
+		
+		function fnc_getType(obj, perPageNum){
+			var className = obj.className;
+			var movePage = pagination.getCurrentPage();
+			if(className === "tui-page-btn tui-next"){
+				fnc_readGridData(movePage+1, perPageNum);
+			}else if(className === "tui-page-btn tui-prev"){
+				fnc_readGridData(movePage-1, perPageNum);
+			}else if(className === "tui-page-btn tui-first"){
+				fnc_readGridData(1, perPageNum);
+			}else if(className === "tui-page-btn tui-last"){
+				var lastPage = Math.ceil(totalCount/perPageNum);
+				fnc_readGridData(lastPage, perPageNum);
+			}
+		}
 	</script>
 </body>
 </html>

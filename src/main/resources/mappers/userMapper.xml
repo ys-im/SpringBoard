@@ -5,12 +5,25 @@
 <mapper namespace="userMapper">
 	<!-- 회원가입 -->
 	<insert id="addUser">
-		
+		INSERT INTO USER(USER_ID, PASSWORD, NAME, EMAIL)
+		VALUES (#{userID}, #{password}, #{name}, #{email})
 	</insert>
 	
 	<!-- 로그인 -->
 	<select id="login" resultType="com.giens.springboard.vo.UserVO">
+		
+	</select>
 	
+	<!-- 사용자 상세 -->
+	<select id="getUser" resultType="com.giens.springboard.vo.UserVO">
+		SELECT USER_ID
+			, NAME
+			, EMAIL
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d') as regDAte
+			, ACTIVE
+			, DEL_FLAG
+		FROM USER
+		WHERE USER_ID = #{userID}
 	</select>
 	
 	<!-- 아이디 중복체크 -->
@@ -19,4 +32,71 @@
 		FROM USER
 		WHERE USER_ID = #{userID}
 	</select>
+	
+	<!-- 사용자 목록 -->
+	<select id="userList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.UserVO">
+		SELECT USER_ID
+			, NAME
+			, EMAIL
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as regDate
+			, ACTIVE
+			, DEL_FLAG		
+		FROM USER
+		WHERE 1=1
+			AND DEL_FLAG = 'N'
+			<include refid="searchOption"></include>
+		ORDER BY REG_DATE DESC, DEL_FLAG DESC
+		LIMIT #{rowStart}, #{perPageNum}		
+	</select>
+	
+	<!-- 사용자 목록 개수 -->
+	<select id="countUserList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="Integer">
+		SELECT COUNT(*)
+		FROM USER
+		WHERE 1=1
+			<include refid="searchOption"></include>
+	</select>
+	
+	<!-- 로그인 이력 추가 -->
+	<insert id="addLoginHistory">
+		INSERT INTO LOG_HISTORY(USER_ID, IP_ADDRESS)
+		VALUES (#{userID}, #{ipAddress})
+	</insert>
+	
+	<!-- 로그인 히스토리 목록 -->
+	<select id="loginHistoryList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.LoginHistoryVO">
+		SELECT LOG_ID as rowNo
+			, USER_ID as userID
+			, DATE_FORMAT(LOGIN_TIME, '%Y-%m-%d %H:%i:%s') as loginTime
+			, DATE_FORMAT(LOGOUT_TIME, '%Y-%m-%d %H:%i:%s') as logoutTime
+			, IP_ADDRESS as ipAddress
+		FROM LOG_HISTORY
+		WHERE 1=1
+			<include refid="searchOption"></include>
+		ORDER BY LOG_ID DESC
+		LIMIT #{rowStart}, #{perPageNum}		
+	</select>
+	
+	<!-- 로그인 히스토리 목록 개수 -->
+	<select id="countLoginHistoryList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="Integer">
+		SELECT COUNT(*)
+		FROM LOG_HISTORY
+		WHERE 1=1
+			<include refid="searchOption"></include>
+	</select>
+	
+	<!-- 검색옵션 -->
+	<sql id="searchOption">
+		<if test="searchType != null">
+			<if test="searchType == 'name'.toString()">AND NAME LIKE CONCAT('%',#{keyword},'%')</if>
+			<if test="searchType == 'userID'.toString()">AND USER_ID LIKE CONCAT('%',#{keyword},'%')</if>
+		</if>
+	</sql>
+	
+	<!-- 사용자 삭제 -->
+	<update id="deleteUser">
+		UPDATE USER
+		SET DEL_FLAG = 'Y'
+		WHERE USER_ID = #{userID}
+	</update>
 </mapper>

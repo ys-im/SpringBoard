@@ -53,12 +53,12 @@
 					<div class="card shadow mb-4">
 						<div class="card-body">
 							<div>
-								<form method="POST" action="/regist.do">
+								<form name="registForm" method="POST" action="/regist.do">
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">아이디</div>	
 										<div class="col-sm-8">
-											<input type="text" class="form-control form-control-user"
-												id="userID" placeholder="ID">												
+											<input type="text" class="form-control form-control-user" 
+												id="userID" name="userID" placeholder="ID" onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);">												
 											<span id="idCheckMessage" class="small">아이디 중복체크 검사 메시지</span>
 										</div>
 										<button type="button" class="btn btn-primary mr-3 ml-auto" id="idCheck">중복검사</button><br>
@@ -67,7 +67,7 @@
 										<div class="form-inline col-sm-2">비밀번호</div>
 										<div class="col-sm-10">
 											<input type="password" class="form-control form-control-user" 
-												id="password" oninput="checkPwd()" placeholder="Password">
+												id="password" name="password" oninput="checkPwd()" onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);" placeholder="Password">
 										</div>
 									</div>
 
@@ -75,38 +75,36 @@
 										<div class="form-inline col-sm-2">비밀번호 확인</div>
 										<div class="col-sm-10">
 											<input type="password" class="form-control form-control-user" 
-												id="repeatPassword" oninput="checkPwd()" placeholder="Repeat Password">
-											<span id="repeatPasswordMessage" class="small">비밀번호 일치여부 메시지</span>
+												id="repeatPassword" name="repeatPassword" oninput="checkPwd()" placeholder="Repeat Password">
 										</div>
 									</div>
 
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">이름</div>
 										<div class="col-sm-10">
-											<input type="text" class="form-control" id="userName"
-												placeholder="Name">
+											<input type="text" class="form-control" id="name" name="name" placeholder="Name">
 										</div>
 									</div>
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">이메일</div>
 										<div class="col-sm-10">
-											<input type="email" class="form-control" id="userEmail"
-												placeholder="E-mail / ex) abc@abc.">
+											<input type="email" class="form-control" id="email" name="email" oninput="checkEmail()" 
+												 onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);" placeholder="E-mail / ex) abc@abc.">
 										</div>
 									</div>
 									<div class="form-group row">
 										<label class="form-inline col-sm-2">관리자 입니까?</label> 
 										<label class="radio-container m-r-55 col-sm-2">네 
-											<input type="radio" checked="checked" name="exist"> 
+											<input type="radio" name="exist" value="Y"> 
 											<span class="checkmark"></span>
 										</label> 
 										<label class="radio-container">아니오
-											<input type="radio" name="exist"> 
+											<input type="radio" checked="checked" name="exist" value="N"> 
 											<span class="checkmark"></span>
 										</label>
 									</div>
 									<div class="form-group row">
-										<button class="btn btn-primary mr-3 ml-auto" type="submit">
+										<button class="btn btn-primary mr-3 ml-auto" type="button" id="regist" onclick="signUp()">
 											<i class="fa fa-user-plus mr-3"></i>등록
 										</button>
 									</div>
@@ -153,8 +151,15 @@
 
 	<!-- Page level custom scripts -->
 	<script>
+		var idCheck = 0;
+		var pwdCheck = 0;
 		$("#idCheck").click(function(){
 			var idCheckValue;
+			
+			var userIdValue = $("#userID").val().trim();
+			console.log(userIdValue);
+				
+			
 			$.ajax({
 				url : "/idCheck.do?userID="+$("#userID").val(),
 				method: "GET",
@@ -164,9 +169,13 @@
 					if(idCheckValue == 0){						
 						$("#idCheckMessage").text("사용 가능한 ID 입니다.");
 						document.getElementById("idCheckMessage").style.color = "green";
+						idCheck = 1;
+						return true;
 					}else{
 						$("#idCheckMessage").text("사용할 수 없는 ID 입니다.");
 						document.getElementById("idCheckMessage").style.color = "red";
+						idCheck = 0;
+						return false;
 					}
 				},
 				error : function(xhr, status, error){
@@ -174,14 +183,90 @@
 				}
 			});
 		});
-		
+
 		function checkPwd(){
 			var pw = $("#password").val();
 			var r_pw = $("#repeatPassword").val();
 			
-			//여기에 비밀번호 일치여부 검사하는 코드 넣으시면 됩니다.
-			//https://j3rmy.tistory.com/4 참고 사이트
+	        if(r_pw=="" && (pw != r_pw || pw == r_pw)){
+	            $("#repeatPassword").css("background-color", "#FFCECE");
+	            pwdCheck = 0;
+	        }
+	        else if (pw == r_pw) {
+	            $("#repeatPassword").css("background-color", "#B0F6AC");
+	            pwdCheck = 1;
+	        } else if (pw != r_pw) {
+	            $("#repeatPassword").css("background-color", "#FFCECE");	
+	            pwdCheck = 0;            
+	        }
 		}
+		
+		function checkEmail(){
+			var str = $("#userEmail").val();
+			var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			if (regExp.test(str)){
+				return true;
+			}else {
+				return false;
+			}
+		}
+		
+		function signUp(){
+			var registForm = document.registForm;
+			var userID = registForm.userID.value;
+			var password = registForm.password.value;
+			var name = registForm.name.value;
+			var email = registForm.email.value;
+			console.log(userID+", "+password+", "+name+", "+email);
+			if(!userID){
+				alert("아이디를 입력해주세요.");
+				$("#userID").focus();
+				return;
+			}else if(idCheck == 0){
+				alert("아이디 중복검사를 해주세요.");
+				$("#idCheck").focus();
+				return;
+			}
+			
+			if(!password){
+				alert("비밀번호를 입력해주세요.");
+				$("#password").focus();
+				return;
+			}else if(pwdCheck == 0){
+				alert("비밀번호가 일치하지 않습니다.");
+				$("#repeatPassword").focus();
+				return;
+			}
+			
+			if(!name){
+				alert("이름을 입력해주세요.");
+				$("#name").focus();
+				return;
+			}
+			
+			if(!email){
+				alert("이메일을 입력해주세요.");
+				$("#email").focus();
+				return;
+			}
+			
+			registForm.submit();
+			
+		}
+		
+		//공백제거 function
+		function fnc_spacebar(obj){
+			var str_space = /\s/; //공백체크
+			if(str_space.exec(obj.value)){
+				alert("해당 항목에는 공백을 사용할 수 없습니다. \n\n공백은 자동적으로 제거 됩니다.");
+				obj.focus();
+				obj.value = obj.value.replace(' ', '');//공백제거
+				return false;
+			}
+		}
+		
+		
+		
 	</script>
 </body>
 </html>

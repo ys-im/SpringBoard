@@ -252,7 +252,6 @@
 				hidden : true
 			}]				
 		}); 
-		grid.set
 		
 		$(document).ready(function() {				
 			fnc_readGridData(startPage, perPageNum);

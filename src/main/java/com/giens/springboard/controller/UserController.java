@@ -1,15 +1,24 @@
 package com.giens.springboard.controller;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.giens.springboard.service.User.UserService;
+import com.giens.springboard.vo.BoardVO;
+import com.giens.springboard.vo.LoginHistoryVO;
+import com.giens.springboard.vo.PageMaker;
+import com.giens.springboard.vo.SearchCriteria;
+import com.giens.springboard.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,11 +58,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/regist.do")
-	public String addUser(/*여기에 받을 파라미터 입력하면 됨. BoardController/addBoard 참고*/) throws Exception {
+	public String addUser(UserVO userVO) throws Exception {
 		logger.info("user regist");
 		
-		return "";
-		//return "redirect:/user.do";
+		userService.addUser(userVO);
+		return "redirect:/user.do";
 	}
 
 	//아이디 중복 체크
@@ -61,8 +70,9 @@ public class UserController {
 	@ResponseBody
 	public int idCheck(String userID) throws Exception {
 		logger.info("id check");
+		
 		int idCheckValue = userService.idCheck(userID);
-		System.out.println(idCheckValue);
+		
 		return idCheckValue;
 	}
 	@RequestMapping(value="/loginHistory.do")
@@ -71,4 +81,23 @@ public class UserController {
 		
 		return "loginHistory";
 	}
+	
+	//사용자 상세보기
+	@RequestMapping(value="/userDetail.do")
+	public String getUser(String userID, Model model) throws Exception {
+		logger.info("user detaile");
+		UserVO userVO = userService.getUser(userID);
+		model.addAttribute("user", userVO);
+		return "userDetail";
+	}
+	
+	//사용자 삭제
+	@RequestMapping(value="/userDelete.do")
+	public String deleteUser(String userID) throws Exception {
+		logger.info("user delete");
+		
+		userService.deleteUser(userID);
+		return "redirect:/user.do";
+	}
+	
 }
