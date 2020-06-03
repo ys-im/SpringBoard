@@ -38,19 +38,19 @@
 				<div class="bg-login-image js-tilt" data-tilt>
 					<img src="/resources/img/img-01.png" alt="IMG">
 				</div>
-				<form class="user" name="loginForm" method="get" action="/login.do">
+				<form class="user" name="loginForm" method="post" action="/login.do">
 					<div class="text-center">
 						<h2>로그인</h2>
 					</div>
 					<hr>
 					<div class="form-group">
-						<input type="email" class="form-control form-control-user"
-							id="exampleInputEmail" aria-describedby="emailHelp"
+						<input type="text" class="form-control form-control-user"
+							id="userID" name="userID" 
 							placeholder="ID">
 					</div>
 					<div class="form-group">
 						<input type="password" class="form-control form-control-user"
-							id="exampleInputPassword" placeholder="Password">
+							id="password" name="password" placeholder="Password">
 					</div>
 					<div class="form-group">
 						<div class="custom-control custom-checkbox small">
