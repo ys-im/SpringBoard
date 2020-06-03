@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 	
 <!-- Topbar -->
 <nav
@@ -25,7 +26,7 @@
 		<li class="nav-item dropdown no-arrow">
 			<a class="nav-link dropdown-toggle" href="#" id="userDropdown"
 				role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
-			<span class="text-gray-800" style="font-weight: bold">사용자 이름 
+			<span class="text-gray-800" style="font-weight: bold">${user.userID}
 				<i class="fa fa-user fa-fw"></i>
 			</span>
 		</a> <!-- Dropdown - User Information -->

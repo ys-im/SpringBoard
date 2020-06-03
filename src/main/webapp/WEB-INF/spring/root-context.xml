@@ -16,7 +16,7 @@
 			value="org.mariadb.jdbc.Driver" />
 		<property name="url" value="jdbc:mariadb://localhost:3306/spring_board" />
 		<property name="username" value="root" />
-		<property name="password" value="asdf123" />
+		<property name="password" value="1234" />
 	</bean>
 
 	<!-- value는 값을 지정 ref는 이미 지정한 값을 가져오는 것 -->

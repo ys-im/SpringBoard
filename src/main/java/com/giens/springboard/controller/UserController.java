@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.giens.springboard.service.User.UserService;
@@ -63,11 +64,20 @@ public class UserController {
 		return result;
 	}
 	
+	@RequestMapping(value = "/logout.do", method= RequestMethod.GET)
+	public String logout(HttpSession session) throws Exception{
+		session.invalidate();
+		return "redirect:/loginView.do";
+	}
+	
 	@RequestMapping(value="/user.do")
-	public String getListUser() throws Exception {
+	public String getListUser(HttpSession session) throws Exception {
 		logger.info("user list");
-		
-		return "userList";
+		if(session.getAttribute("userID") == null) {
+			return "redirect:/loginView.do";
+		}else {	
+			return "userList";
+		}
 	}
 	
 	@RequestMapping(value="/registView.do")
@@ -75,7 +85,7 @@ public class UserController {
 		logger.info("user regist form");
 		
 		return "regist";
-	}
+	}	
 	
 	@RequestMapping(value="/regist.do")
 	public String addUser(UserVO userVO) throws Exception {
