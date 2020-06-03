@@ -3,15 +3,20 @@ package com.giens.springboard.controller;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.giens.springboard.service.User.UserService;
 import com.giens.springboard.vo.BoardVO;
@@ -31,16 +36,31 @@ public class UserController {
 	@Inject
 	UserService userService;
 	
-	@RequestMapping(value = "/loginView.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/loginView.do")
 	public String loginView() {
 		logger.info("login view");
 		return "login";
 	}
 	
 	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
-	public String login() {
+	public String login(UserVO userVO, HttpServletRequest req, RedirectAttributes rttr) throws Exception {
 		logger.info("login");
-		return "forword:/board.do";
+		System.out.println(userVO);
+		HttpSession session = req.getSession();
+		UserVO loginResult = userService.login(userVO);
+		
+		String result = "";
+		if(loginResult == null)	{
+			session.setAttribute("user", null);
+			rttr.addFlashAttribute("msg", false);
+			result = "redirect:/loginView.do";
+		} else {
+			session.setAttribute("user", loginResult);
+			result = "redirect:/board.do";
+		}
+		System.out.println(loginResult);
+		System.out.println(result);
+		return result;
 	}
 	
 	@RequestMapping(value="/user.do")
