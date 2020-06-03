@@ -25,9 +25,8 @@ public class UserDAOImpl implements UserDAO{
 
 	//로그인
 	@Override
-	public UserVO login(UserVO userVO) throws Exception {
-		
-		return null;
+	public UserVO login(UserVO userVO) throws Exception {		
+		return sqlSession.selectOne("userMapper.login", userVO);
 	}
 
 	//아이디 중복 체크

@@ -11,17 +11,22 @@
 	
 	<!-- 로그인 -->
 	<select id="login" resultType="com.giens.springboard.vo.UserVO">
-		
+		SELECT USER_ID as userID
+			, PASSWORD
+		FROM USER
+		WHERE USER_ID = #{userID}
+			AND PASSWORD = #{password}		
 	</select>
 	
 	<!-- 사용자 상세 -->
 	<select id="getUser" resultType="com.giens.springboard.vo.UserVO">
-		SELECT USER_ID
+		SELECT USER_ID as userID
 			, NAME
+			, PASSWORD
 			, EMAIL
 			, DATE_FORMAT(REG_DATE, '%Y-%m-%d') as regDAte
 			, ACTIVE
-			, DEL_FLAG
+			, DEL_FLAG as delFlag
 		FROM USER
 		WHERE USER_ID = #{userID}
 	</select>
@@ -35,12 +40,13 @@
 	
 	<!-- 사용자 목록 -->
 	<select id="userList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.UserVO">
-		SELECT USER_ID
+		SELECT USER_ID as userID
 			, NAME
+			, PASSWORD
 			, EMAIL
 			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as regDate
 			, ACTIVE
-			, DEL_FLAG		
+			, DEL_FLAG as delFlag		
 		FROM USER
 		WHERE 1=1
 			AND DEL_FLAG = 'N'

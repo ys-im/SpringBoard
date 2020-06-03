@@ -25,8 +25,7 @@ public class UserServiceImpl implements UserService{
 	//로그인
 	@Override
 	public UserVO login(UserVO userVO) throws Exception {
-		
-		return null;
+		return userDAO.login(userVO);
 	}
 	
 	//사용자 상세
