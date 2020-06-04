@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -37,6 +38,7 @@ import com.giens.springboard.vo.BoardVO;
 import com.giens.springboard.vo.Criteria;
 import com.giens.springboard.vo.PageMaker;
 import com.giens.springboard.vo.SearchCriteria;
+import com.giens.springboard.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,10 +61,15 @@ public class BoardController {
 	 * @reference AjaxController.java -> ajaxBoardList()	 	
 	 */
 	@RequestMapping(value = "/board.do", method = RequestMethod.GET)
-	public String getListBoard() throws Exception {
-		logger.info("board view");		
+	public String getListBoard(HttpSession session) throws Exception {
+		logger.info("board view");	
 		
-		return "board/board";
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		if(userVO == null) {
+			return "redirect:/loginView.do";
+		}else {
+			return "board/board";
+		}
 	}
 	
 	/**
@@ -72,30 +79,36 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/writeView.do", method = RequestMethod.GET)
-	public String writeView(int pBoardNo, String title, Model model) throws Exception {		
-		int originNo = 0;
-		int groupSeq = 0;
-		int groupLayer = 0;
-		int replyCnt = 0;
-		if(pBoardNo > 0) {
-			BoardVO vo = boardService.getBoard(pBoardNo).get(0);
-			originNo = Integer.parseInt(vo.getOriginNo());
-			groupSeq = Integer.parseInt(vo.getGroupSeq());
-			groupLayer = Integer.parseInt(vo.getGroupLayer())+1;
-			replyCnt = Integer.parseInt(vo.getReplyCnt());
+	public String writeView(int pBoardNo, String title, Model model, HttpSession session) throws Exception {		
+		
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		if(userVO == null) {
+			return"redirect:/loginView.do";
+		}else {
+			int originNo = 0;
+			int groupSeq = 0;
+			int groupLayer = 0;
+			int replyCnt = 0;
+			if(pBoardNo > 0) {
+				BoardVO vo = boardService.getBoard(pBoardNo).get(0);
+				originNo = Integer.parseInt(vo.getOriginNo());
+				groupSeq = Integer.parseInt(vo.getGroupSeq());
+				groupLayer = Integer.parseInt(vo.getGroupLayer())+1;
+				replyCnt = Integer.parseInt(vo.getReplyCnt());
+			}
+			Map<String, Object> map = new HashMap<String, Object>();
+			title = "  Re : "+title;
+			map.put("title", title);
+			map.put("originNo", originNo);
+			map.put("groupSeq", groupSeq);
+			map.put("groupLayer", groupLayer);
+			map.put("pBoardNo", pBoardNo);
+			map.put("replyCnt", replyCnt);		
+			
+			model.addAttribute("writeInfo", map);
+			
+			return "board/write";
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
-		title = "  Re : "+title;
-		map.put("title", title);
-		map.put("originNo", originNo);
-		map.put("groupSeq", groupSeq);
-		map.put("groupLayer", groupLayer);
-		map.put("pBoardNo", pBoardNo);
-		map.put("replyCnt", replyCnt);		
-		
-		model.addAttribute("writeInfo", map);
-		
-		return "board/write";
 	}
 	
 	/**
@@ -143,14 +156,20 @@ public class BoardController {
 	 * @reference AjaxController.java -> ajaxBoardDetail(int boardNo)
 	 */
 	@RequestMapping(value = "/boardDetail.do", method = RequestMethod.GET)
-	public String getBoard(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
+	public String getBoard(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, 
+							Model model, HttpSession session) throws Exception {
 		logger.info("get board detail");
-		boardService.updateBoardHit(boardNo);
-		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
-		model.addAttribute("fileList", fileList);
-		model.addAttribute("searchCriteria", searchCriteria);
-		
-		return "board/boardDetail";
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		if(userVO == null) {
+			return "redirect:/loginView.do";
+		}else {
+			boardService.updateBoardHit(boardNo);
+			List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
+			model.addAttribute("fileList", fileList);
+			model.addAttribute("searchCriteria", searchCriteria);
+			
+			return "board/boardDetail";
+		}
 	}
 	
 	/** 
@@ -185,17 +204,22 @@ public class BoardController {
 	 * @reference 
 	 */
 	@RequestMapping(value = "/editView.do", method = RequestMethod.GET)
-	public String editView(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
+	public String editView(int boardNo, @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, 
+							Model model, HttpSession session) throws Exception {
 		logger.info("edit view");
-		
-		List<BoardVO> boardVO = boardService.getBoard(boardNo);
-		model.addAttribute("edit", boardVO.get(0));	
-		
-		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
-		model.addAttribute("fileList", fileList);
-		model.addAttribute("searchCriteria", searchCriteria);
-		
-		return "board/edit";
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		if(userVO == null) {
+			return "redirect:/loginView.do";
+		}else {
+			List<BoardVO> boardVO = boardService.getBoard(boardNo);
+			model.addAttribute("edit", boardVO.get(0));	
+			
+			List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
+			model.addAttribute("fileList", fileList);
+			model.addAttribute("searchCriteria", searchCriteria);
+			
+			return "board/edit";
+		}
 	}
 	
 	/**
@@ -292,45 +316,50 @@ public class BoardController {
 	 */
 	@RequestMapping(value="/deleteBoard.do")
 	public String deleteBoard(int boardNo, 
-			 @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) throws Exception {
+			 @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, 
+			 Model model, HttpSession session) throws Exception {
 		
 		logger.info("delete board");
-		
-		//게시글 삭제
-		boardService.deleteBoard(boardNo);
-
-		List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
-		
-		//게시글에 첨부된 첨부파일 삭제 DB
-		List<Map<String, String>> deleteFileList = new ArrayList<Map<String, String>>();
-		for(int i = 0; i < fileList.size(); i++) {
-			String fileNo = fileList.get(i).get("FILE_NO").toString();
-			String filePathInfo = fileList.get(i).get("FILE_PATH").toString() 
-									+ fileList.get(i).get("STORED_FILE_NAME").toString();
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("fileNo", fileNo);
-			map.put("filePathInfo", filePathInfo);
-			//기존 첨부파일 번호 넣어줌
-			deleteFileList.add(map);
-		}
-		boardService.deleteBoardFile(deleteFileList);
-		
-		//게시글에 첨부된 첨부파일 삭제 Directory
-		int size = deleteFileList.size();
-		for(int i = 0; i < size; i++) {
-			String fileInfo = deleteFileList.get(i).get("filePathInfo");
-			File file = new File(fileInfo); //파일 실물 디렉토리
-			if(file.exists()) {
-				//파일 경로 + 저장된 파일명 까지 가져왔으므로 file.isDirectory() 생략
-				file.delete();
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		if(userVO == null) {
+			return "redirect:/loginView.do";
+		}else {
+			//게시글 삭제
+			boardService.deleteBoard(boardNo);
+	
+			List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
+			
+			//게시글에 첨부된 첨부파일 삭제 DB
+			List<Map<String, String>> deleteFileList = new ArrayList<Map<String, String>>();
+			for(int i = 0; i < fileList.size(); i++) {
+				String fileNo = fileList.get(i).get("FILE_NO").toString();
+				String filePathInfo = fileList.get(i).get("FILE_PATH").toString() 
+										+ fileList.get(i).get("STORED_FILE_NAME").toString();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("fileNo", fileNo);
+				map.put("filePathInfo", filePathInfo);
+				//기존 첨부파일 번호 넣어줌
+				deleteFileList.add(map);
 			}
-		}	
-		
-		model.addAttribute("page", searchCriteria.getPage());
-		model.addAttribute("perPageNum", searchCriteria.getPerPageNum());
-		model.addAttribute("searchType", searchCriteria.getSearchType());
-		model.addAttribute("keyword", searchCriteria.getKeyword());
-		
-		return "redirect:/board.do";
+			boardService.deleteBoardFile(deleteFileList);
+			
+			//게시글에 첨부된 첨부파일 삭제 Directory
+			int size = deleteFileList.size();
+			for(int i = 0; i < size; i++) {
+				String fileInfo = deleteFileList.get(i).get("filePathInfo");
+				File file = new File(fileInfo); //파일 실물 디렉토리
+				if(file.exists()) {
+					//파일 경로 + 저장된 파일명 까지 가져왔으므로 file.isDirectory() 생략
+					file.delete();
+				}
+			}	
+			
+			model.addAttribute("page", searchCriteria.getPage());
+			model.addAttribute("perPageNum", searchCriteria.getPerPageNum());
+			model.addAttribute("searchType", searchCriteria.getSearchType());
+			model.addAttribute("keyword", searchCriteria.getKeyword());
+			
+			return "redirect:/board.do";
+		}
 	}
 }

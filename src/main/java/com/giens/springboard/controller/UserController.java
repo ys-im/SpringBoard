@@ -73,7 +73,7 @@ public class UserController {
 	@RequestMapping(value="/user.do")
 	public String getListUser(HttpSession session) throws Exception {
 		logger.info("user list");
-		if(session.getAttribute("userID") == null) {
+		if(session.getAttribute("user") == null) {
 			return "redirect:/loginView.do";
 		}else {	
 			return "userList";
