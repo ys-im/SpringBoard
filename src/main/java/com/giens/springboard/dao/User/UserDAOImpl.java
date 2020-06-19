@@ -65,11 +65,24 @@ public class UserDAOImpl implements UserDAO{
 		return sqlSession.selectOne("userMapper.countLoginHistoryList", searchCriteria);
 	}
 
+	//로그인 히스토리 등록
+	@Override
+	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception {
+		sqlSession.insert("userMapper.insertLoginHistory", loginHistoryVO);
+	}
+	
+	//로그아웃 히스토리 등록
+	@Override
+	public void updateLoginHistory(String userID) throws Exception {
+		sqlSession.update("userMapper.updateLoginHistory", userID);
+	}
+	
 	//사용자 삭제(업데이트 del_flag)
 	@Override
 	public void deleteUser(String userID) throws Exception {
 		sqlSession.update("userMapper.deleteUser", userID);
 	}
+
 
 
 }

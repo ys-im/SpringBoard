@@ -14,8 +14,7 @@
 		SELECT USER_ID as userID
 			, PASSWORD
 		FROM USER
-		WHERE USER_ID = #{userID}
-			AND PASSWORD = #{password}		
+		WHERE USER_ID = #{userID}	
 	</select>
 	
 	<!-- 사용자 상세 -->
@@ -63,12 +62,6 @@
 			<include refid="searchOption"></include>
 	</select>
 	
-	<!-- 로그인 이력 추가 -->
-	<insert id="addLoginHistory">
-		INSERT INTO LOG_HISTORY(USER_ID, IP_ADDRESS)
-		VALUES (#{userID}, #{ipAddress})
-	</insert>
-	
 	<!-- 로그인 히스토리 목록 -->
 	<select id="loginHistoryList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.LoginHistoryVO">
 		SELECT LOG_ID as rowNo
@@ -98,6 +91,20 @@
 			<if test="searchType == 'userID'.toString()">AND USER_ID LIKE CONCAT('%',#{keyword},'%')</if>
 		</if>
 	</sql>
+	
+	<!-- 로그인 히스토리 등록 -->
+	<insert id="insertLoginHistory">
+		INSERT INTO LOG_HISTORY(USER_ID, IP_ADDRESS)
+		VALUES (#{userID}, #{ipAddress})
+	</insert>
+	
+	<!-- 로그아웃 히스토리 등록 -->
+	<update id="updateLoginHistory">
+		UPDATE LOG_HISTORY
+		SET LOGOUT_TIME = NOW()
+		WHERE USER_ID = #{userID}
+			and LOGOUT_TIME is null
+	</update>	
 	
 	<!-- 사용자 삭제 -->
 	<update id="deleteUser">

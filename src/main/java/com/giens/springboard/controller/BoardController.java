@@ -9,19 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,14 +27,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.giens.springboard.service.Board.BoardService;
 import com.giens.springboard.util.FileUtils;
 import com.giens.springboard.vo.BoardVO;
-import com.giens.springboard.vo.Criteria;
-import com.giens.springboard.vo.PageMaker;
 import com.giens.springboard.vo.SearchCriteria;
 import com.giens.springboard.vo.UserVO;
 
@@ -48,7 +43,7 @@ public class BoardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
-	@Inject
+	@Autowired
 	BoardService boardService;
 
 	@Resource(name="fileUtils")
@@ -97,7 +92,9 @@ public class BoardController {
 				replyCnt = Integer.parseInt(vo.getReplyCnt());
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
-			title = "  Re : "+title;
+			if(title != "") {
+				title = "  Re : "+title;
+			}
 			map.put("title", title);
 			map.put("originNo", originNo);
 			map.put("groupSeq", groupSeq);

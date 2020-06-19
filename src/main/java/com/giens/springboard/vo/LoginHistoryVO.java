@@ -7,16 +7,7 @@ public class LoginHistoryVO {
 	private String loginTime;
 	private String logoutTime;
 	private String ipAddress;
-	
-	public LoginHistoryVO(String rowNo, String userID, String loginTime, String logoutTime, String ipAddress) {
-		super();
-		this.rowNo = rowNo;
-		this.userID = userID;
-		this.loginTime = loginTime;
-		this.logoutTime = logoutTime;
-		this.ipAddress = ipAddress;
-	}
-	
+		
 	public String getRowNo() {
 		return rowNo;
 	}

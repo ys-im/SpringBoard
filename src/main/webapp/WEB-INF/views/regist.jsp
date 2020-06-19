@@ -88,8 +88,8 @@
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">이메일</div>
 										<div class="col-sm-10">
-											<input type="email" class="form-control" id="email" name="email" oninput="checkEmail()" 
-												 onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);" placeholder="E-mail / ex) abc@abc.">
+											<input type="email" class="form-control" id="email" name="email"
+												 placeholder="E-mail / ex) abc@abc.">
 										</div>
 									</div>
 									<div class="form-group row">
@@ -217,7 +217,7 @@
 			var password = registForm.password.value;
 			var name = registForm.name.value;
 			var email = registForm.email.value;
-			console.log(userID+", "+password+", "+name+", "+email);
+			
 			if(!userID){
 				alert("아이디를 입력해주세요.");
 				$("#userID").focus();

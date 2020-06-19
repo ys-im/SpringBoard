@@ -7,20 +7,20 @@
 	<!-- <select id="boardList" resultType="com.giens.springboard.vo.BoardVO"> -->
 	<!-- 페이지 적용 게시글 목록 -->
 	<select id="boardList" parameterType="com.giens.springboard.vo.SearchCriteria" resultType="com.giens.springboard.vo.BoardVO">
-		SELECT @ROWNUM:=@ROWNUM-1 as ROWNUM
-		  , B.TITLE
-	      , B.CONTENTS
-	      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d') as REG_DATE
-	      , B.USER_ID
-	      , B.BOARD_NO
-	      , B.ORIGIN_NO
-	      , B.GROUP_SEQ
-	      , B.GROUP_LAYER
-	      , B.P_BOARD_NO
-	      , B.GROUP_PATH
-	      , B.HIT
-	      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
-	      , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as FILE_CNT
+		SELECT @ROWNUM:=@ROWNUM-1 as rowNo
+		  , B.TITLE as title
+	      , B.CONTENTS as contents
+	      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d') as regDate
+	      , B.USER_ID as userID
+	      , B.BOARD_NO as boardNo
+	      , B.ORIGIN_NO as originNo
+	      , B.GROUP_SEQ as groupSeq
+	      , B.GROUP_LAYER as groupLayer
+	      , B.P_BOARD_NO as pBoardNo
+	      , B.GROUP_PATH as groupPath
+	      , B.HIT as hit
+	      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
+	      , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as fileCnt
 		FROM board B, 
 			(SELECT @ROWNUM := (SELECT COUNT(0) FROM board WHERE 1=1 <include refid="searchOption"/>)+1-#{rowStart}) TMP
   		WHERE 1=1
@@ -116,20 +116,20 @@
 	
 	<!-- 게시글 조회 -->
 	<select id="boardDetail" parameterType="int" resultType="com.giens.springboard.vo.BoardVO">
-		SELECT "" as ROWNUM
-			  , B.TITLE 
-		      , B.CONTENTS
-		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
-		      , B.USER_ID
-		      , B.BOARD_NO 
-		      , B.ORIGIN_NO
-		      , B.GROUP_SEQ 
-		      , B.GROUP_LAYER 
-		      , B.P_BOARD_NO 
-		      , B.GROUP_PATH 
-		      , B.HIT
-		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as REPLY_CNT
-      		  , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as FILE_CNT
+		SELECT "" as rowNo
+			  , B.TITLE as title
+		      , B.CONTENTS as contents
+		      , DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %H:%i') as regDate
+		      , B.USER_ID as userID
+		      , B.BOARD_NO as boardNo
+		      , B.ORIGIN_NO as originNo
+		      , B.GROUP_SEQ as groupSeq
+		      , B.GROUP_LAYER as groupLayer
+		      , B.P_BOARD_NO as pBoardNo
+		      , B.GROUP_PATH as groupPath
+		      , B.HIT as hit
+		      , (SELECT COUNT(0) FROM board WHERE p_board_no = B.board_no) as replyCnt
+      		  , IFNULL((SELECT COUNT(0) FROM board_file WHERE board_no = B.board_no GROUP BY board_no), 0) as fileCnt
 		FROM board B
 		WHERE B.BOARD_NO = #{boardNo} OR B.P_BOARD_NO = #{boardNo}
 		ORDER BY B.BOARD_NO

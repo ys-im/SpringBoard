@@ -35,6 +35,12 @@ public interface UserService {
 	//로그인 히스토리 목록 개수
 	public int countLoginHistoryList(SearchCriteria searchCriteria) throws Exception;
 	
+	//로그인 히스토리 등록
+	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception;
+	
+	//로그아웃 히스토리 등록
+	public void updateLoginHistory(String userID) throws Exception;
+	
 	//사용자 삭제
 	public void deleteUser(String userID) throws Exception;
 }

@@ -60,8 +60,20 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception {
+		userDAO.insertLoginHistory(loginHistoryVO);
+	}
+	
+	@Override
+	public void updateLoginHistory(String userID) throws Exception {
+		userDAO.updateLoginHistory(userID);
+	}
+	
+	@Override
 	public void deleteUser(String userID) throws Exception {
 		userDAO.deleteUser(userID);
 	}
+
+
 	
 }

@@ -1,29 +1,23 @@
 package com.giens.springboard.controller;
 
-import java.util.List;
+import java.net.InetAddress;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.giens.springboard.service.User.UserService;
-import com.giens.springboard.vo.BoardVO;
 import com.giens.springboard.vo.LoginHistoryVO;
-import com.giens.springboard.vo.PageMaker;
-import com.giens.springboard.vo.SearchCriteria;
 import com.giens.springboard.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +28,11 @@ public class UserController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
-	@Inject
+	@Autowired
 	UserService userService;
+	
+	@Autowired
+	BCryptPasswordEncoder pwdEncoder;
 	
 	@RequestMapping(value = "/loginView.do")
 	public String loginView() {
@@ -50,8 +47,18 @@ public class UserController {
 		HttpSession session = req.getSession();
 		UserVO loginResult = userService.login(userVO);
 		
+		//암호화된 패스워드 비교
+		boolean pwdMatch = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
+		
+		//로그인 시간 등록
+		LoginHistoryVO loginHistoryVO = new LoginHistoryVO();
+		
+		loginHistoryVO.setUserID(userVO.getUserID());
+		loginHistoryVO.setIpAddress(InetAddress.getLocalHost().getHostAddress());
+		userService.insertLoginHistory(loginHistoryVO);
+		
 		String result = "";
-		if(loginResult == null)	{
+		if(loginResult == null || !pwdMatch) {
 			session.setAttribute("user", null);
 			rttr.addFlashAttribute("msg", false);
 			result = "redirect:/loginView.do";
@@ -66,6 +73,8 @@ public class UserController {
 	
 	@RequestMapping(value = "/logout.do", method= RequestMethod.GET)
 	public String logout(HttpSession session) throws Exception{
+		UserVO userVO = (UserVO) session.getAttribute("user");
+		userService.updateLoginHistory(userVO.getUserID());
 		session.invalidate();
 		return "redirect:/loginView.do";
 	}
@@ -91,7 +100,13 @@ public class UserController {
 	public String addUser(UserVO userVO) throws Exception {
 		logger.info("user regist");
 		
+		//비밀번호 암호화
+		String inputPass = userVO.getPassword();
+		String pwd = pwdEncoder.encode(inputPass);
+		userVO.setPassword(pwd);
+		
 		userService.addUser(userVO);
+		
 		return "redirect:/user.do";
 	}
 

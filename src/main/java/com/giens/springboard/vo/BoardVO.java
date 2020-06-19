@@ -22,26 +22,7 @@ public class BoardVO {
 	private String replyCnt;
 	private String fileCnt;
 	
-	//Constructor		
-	public BoardVO(String rowNo, String title, String contents, String regDate, String userID, String boardNo, String originNo,
-			String groupSeq, String groupLayer, String pBoardNo, String groupPath, String hit, String replyCnt, String fileCnt) {
-		super();
-		this.rowNo = rowNo;
-		this.title = title;
-		this.contents = contents;
-		this.regDate = regDate;
-		this.userID = userID;
-		this.boardNo = boardNo;
-		this.originNo = originNo;
-		this.groupSeq = groupSeq;
-		this.groupLayer = groupLayer;
-		this.pBoardNo = pBoardNo;
-		this.groupPath = groupPath;
-		this.hit = hit;
-		this.replyCnt = replyCnt;
-		this.fileCnt = fileCnt;
-	}
-	
+		
 	//Getter/Setter
 	public String getRowNo() {
 		return rowNo;
