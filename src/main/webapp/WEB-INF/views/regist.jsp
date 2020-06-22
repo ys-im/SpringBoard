@@ -95,11 +95,11 @@
 									<div class="form-group row">
 										<label class="form-inline col-sm-2">관리자 입니까?</label> 
 										<label class="radio-container m-r-55 col-sm-2">네 
-											<input type="radio" name="exist" value="Y"> 
+											<input type="radio" name="role" value="1"> 
 											<span class="checkmark"></span>
 										</label> 
 										<label class="radio-container">아니오
-											<input type="radio" checked="checked" name="exist" value="N"> 
+											<input type="radio" checked="checked" name="role" value="2"> 
 											<span class="checkmark"></span>
 										</label>
 									</div>
@@ -217,6 +217,7 @@
 			var password = registForm.password.value;
 			var name = registForm.name.value;
 			var email = registForm.email.value;
+			var role = $("input[name='role']:checked").val();
 			
 			if(!userID){
 				alert("아이디를 입력해주세요.");

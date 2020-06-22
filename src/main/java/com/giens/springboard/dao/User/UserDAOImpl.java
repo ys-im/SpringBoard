@@ -1,6 +1,7 @@
 package com.giens.springboard.dao.User;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -81,6 +82,11 @@ public class UserDAOImpl implements UserDAO{
 	@Override
 	public void deleteUser(String userID) throws Exception {
 		sqlSession.update("userMapper.deleteUser", userID);
+	}
+
+	@Override
+	public void addRole(UserVO userVO) throws Exception {
+		sqlSession.insert("userMapper.addRole", userVO);
 	}
 
 

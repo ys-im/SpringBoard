@@ -1,6 +1,8 @@
 package com.giens.springboard.controller;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -48,6 +50,7 @@ public class UserController {
 		UserVO loginResult = userService.login(userVO);
 		
 		//암호화된 패스워드 비교
+		System.out.println(pwdEncoder.encode(userVO.getPassword()));
 		boolean pwdMatch = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
 		
 		//로그인 시간 등록
@@ -97,15 +100,15 @@ public class UserController {
 	}	
 	
 	@RequestMapping(value="/regist.do")
-	public String addUser(UserVO userVO) throws Exception {
+	public String addUser(UserVO userVO, int role) throws Exception {
 		logger.info("user regist");
-		
 		//비밀번호 암호화
 		String inputPass = userVO.getPassword();
 		String pwd = pwdEncoder.encode(inputPass);
 		userVO.setPassword(pwd);
 		
 		userService.addUser(userVO);
+		userService.addRole(userVO);
 		
 		return "redirect:/user.do";
 	}

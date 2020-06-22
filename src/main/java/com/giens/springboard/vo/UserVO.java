@@ -9,6 +9,7 @@ public class UserVO {
 	private String regDate;
 	private String active;
 	private String delFlag;
+	private String role;
 	
 	
 	/*
@@ -60,6 +61,12 @@ public class UserVO {
 	}
 	public void setDelFlag(String delFlag) {
 		this.delFlag = delFlag;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 

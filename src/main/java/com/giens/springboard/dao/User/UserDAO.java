@@ -1,6 +1,7 @@
 package com.giens.springboard.dao.User;
 
 import java.util.List;
+import java.util.Map;
 
 import com.giens.springboard.vo.LoginHistoryVO;
 import com.giens.springboard.vo.SearchCriteria;
@@ -40,5 +41,7 @@ public interface UserDAO {
 	
 	//사용자 삭제
 	public void deleteUser(String userID) throws Exception;
+
+	public void addRole(UserVO userVO) throws Exception;
 	
 }

@@ -104,11 +104,11 @@
 									<div class="form-group row">
 										<label class="form-inline col-sm-2">관리자 입니까?</label> 
 										<label class="radio-container m-r-55 col-sm-2">네 
-											<input type="radio" name="exist" value="Y"> 
+											<input type="radio" name="role" value="1"> 
 											<span class="checkmark"></span>
 										</label> 
 										<label class="radio-container">아니오
-											<input type="radio" checked="checked" name="exist" value="N"> 
+											<input type="radio" name="role" value="2"> 
 											<span class="checkmark"></span>
 										</label>
 									</div>
@@ -154,6 +154,15 @@
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
 	<script > 
+		$(document).ready(function(){
+			var role = ${user.role};
+			if(role==1){
+				$("input:radio[name='role']:radio[value='1']").prop("checked", true);
+			}else if(role==2){
+				$("input:radio[name='role']:radio[value='2']").prop("checked", true);
+			}
+		});
+	
 		function fnc_save(userID){
 			if(confirm("사용자 '"+userID+"'의 정보를 변경하시겠습니까?")){
 				location.href = "/userEdit.do?userID="+userID;

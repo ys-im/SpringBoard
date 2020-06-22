@@ -23,10 +23,15 @@
 			, NAME
 			, PASSWORD
 			, EMAIL
-			, DATE_FORMAT(REG_DATE, '%Y-%m-%d') as regDAte
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d') as regDate
 			, ACTIVE
 			, DEL_FLAG as delFlag
-		FROM USER
+			, (SELECT R.ROLE_ID 
+			   FROM ROLE_MANAGEMENT RM 
+				   JOIN ROLE R 
+			   ON RM.ROLE_ID = R.ROLE_ID 
+			   WHERE RM.USER_ID = U.USER_ID) as role
+		FROM USER U
 		WHERE USER_ID = #{userID}
 	</select>
 	
@@ -112,4 +117,9 @@
 		SET DEL_FLAG = 'Y'
 		WHERE USER_ID = #{userID}
 	</update>
+	
+	<insert id="addRole">
+		INSERT INTO ROLE_MANAGEMENT(USER_ID, ROLE_ID)
+		VALUES (#{userID}, #{role})
+	</insert>
 </mapper>

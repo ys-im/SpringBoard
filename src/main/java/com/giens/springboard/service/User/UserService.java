@@ -1,6 +1,7 @@
 package com.giens.springboard.service.User;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -43,4 +44,7 @@ public interface UserService {
 	
 	//사용자 삭제
 	public void deleteUser(String userID) throws Exception;
+
+	
+	public void addRole(UserVO userVO) throws Exception;
 }
