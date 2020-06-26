@@ -153,6 +153,7 @@
 	<!-- Viewer -->
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script > 
 		$(document).ready(function(){
 			var role = ${user.role};

@@ -37,10 +37,10 @@ public interface UserService {
 	public int countLoginHistoryList(SearchCriteria searchCriteria) throws Exception;
 	
 	//로그인 히스토리 등록
-	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception;
+	public void insertLoginHistory(Map<String, Object> params) throws Exception;
 	
 	//로그아웃 히스토리 등록
-	public void updateLoginHistory(String userID) throws Exception;
+	public void updateLoginHistory(UserVO userVO) throws Exception;
 	
 	//사용자 삭제
 	public void deleteUser(String userID) throws Exception;

@@ -1,5 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<script>
+	window.onload = function(){
+		var role = "${user.role}";
+		if(role == 1){
+			$("#nav2").attr("style", "visibility:visible;");
+		}else{
+			$("#nav2").attr("style", "visibility:hidden;");
+		}
+	}
+</script>
 	
 	<ul
 		class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
@@ -16,7 +26,7 @@
 		<li><hr class="sidebar-divider my-0"></li>
 
 		<!-- Nav Item - Dashboard -->
-		<li class="nav-item">
+		<li class="nav-item" id="nav1">
 			<a class="nav-link" href="/board.do"> 
 				<i class="fa fa-fw fa-list"></i> <span>게시판</span>
 			</a>
@@ -26,7 +36,7 @@
 		<li><hr class="sidebar-divider my-0"></li>
 
 		<!-- Nav Item - Pages Collapse Menu -->
-		<li class="nav-item">
+		<li class="nav-item" id="nav2">
 		<a class="nav-link collapsed" href="#"
 			data-toggle="collapse" data-target="#collapseTwo"
 			aria-expanded="true" aria-controls="collapseTwo"> 

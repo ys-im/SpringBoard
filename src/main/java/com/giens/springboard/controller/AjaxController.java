@@ -1,31 +1,22 @@
 package com.giens.springboard.controller;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.giens.springboard.service.Board.BoardService;
 import com.giens.springboard.service.User.UserService;
 import com.giens.springboard.vo.BoardVO;
-import com.giens.springboard.vo.Criteria;
 import com.giens.springboard.vo.LoginHistoryVO;
 import com.giens.springboard.vo.PageMaker;
 import com.giens.springboard.vo.SearchCriteria;
 import com.giens.springboard.vo.UserVO;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,10 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AjaxController {
 	private static final Logger logger = LoggerFactory.getLogger(AjaxController.class);
 	
-	@Inject
+	@Autowired
 	BoardService boardService;
 	
-	@Inject
+	@Autowired
 	UserService userService;
 
 

@@ -68,14 +68,14 @@ public class UserDAOImpl implements UserDAO{
 
 	//로그인 히스토리 등록
 	@Override
-	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception {
-		sqlSession.insert("userMapper.insertLoginHistory", loginHistoryVO);
+	public void insertLoginHistory(Map<String, Object> params) throws Exception {
+		sqlSession.insert("userMapper.insertLoginHistory", params);
 	}
 	
 	//로그아웃 히스토리 등록
 	@Override
-	public void updateLoginHistory(String userID) throws Exception {
-		sqlSession.update("userMapper.updateLoginHistory", userID);
+	public void updateLoginHistory(UserVO userVO) throws Exception {
+		sqlSession.update("userMapper.updateLoginHistory", userVO);
 	}
 	
 	//사용자 삭제(업데이트 del_flag)

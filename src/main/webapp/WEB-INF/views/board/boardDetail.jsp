@@ -44,10 +44,10 @@
 						<div class="card-body">
 							<div class="table-responsive">
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">								
-									<button class="btn btn-primary mr-2" onclick="fnc_editView()"> 
+									<button class="btn btn-primary mr-2" id="editButton" onclick="fnc_editView()"> 
 										<i class="fa fa-wrench"></i>&nbsp;수정
 									</button>							
-									<button class="btn btn-primary" onclick="fnc_delete()"> 
+									<button class="btn btn-primary" id="deleteButton" onclick="fnc_delete()"> 
 										<i class="fa fa-trash-alt"></i>&nbsp;삭제
 									</button>
 									<button class="btn btn-primary mr-0 ml-auto" onclick="fnc_writeReply()"> 
@@ -134,6 +134,7 @@
 	<!-- Viewer -->
     <script src="/resources/js/toastui-editor-viewer.js"></script>
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script >   
 		var today = new Date();
 		var year = today.getFullYear();
@@ -145,8 +146,10 @@
 		today = year+"-"+month+"-"+date;
 	
 		var title;
+		var writer;
 		/************************************************** viewer 데이터 */	
-		window.onload = function() {
+		window.onload = function() {			
+			//viewer
 			var boardNo = getParameterByName("boardNo");
 			var data = {"boardNo":boardNo*1};
 			
@@ -157,6 +160,7 @@
 				dataType : "json",
 				success : function(result) {
 					title = result[0].title;
+					writer = result[0].userID;
 					var contents = result[0].contents;
 					var regDate = result[0].regDate;
 					for(var i in result){						
@@ -200,7 +204,20 @@
 					if(regDate.substr(0, 10) == today){
 						$("#title").html(title+"&nbsp;<img src='/resources/img/icons/icon_new_cmt.gif' alt='새글'>");
 					}
-					$("#userName").html("작성자");
+					$("#userName").html(writer);
+
+
+					//수정, 삭제버튼 옵션
+					var userID = "${user.userID}";
+					var role = "${user.role}";
+					console.log(userID+", "+writer);
+					if(userID == writer || role == 1){
+						$("#editButton").attr("style", "visibility:visible;");
+						$("#deleteButton").attr("style", "visibility:visible;");
+					}else{
+						$("#editButton").attr("style", "visibility:hidden;");
+						$("#deleteButton").attr("style", "visibility:hidden;");
+					}
 					
 					/*************************************************************** viewwer  */
 					var viewer = new toastui.Editor({
@@ -226,9 +243,18 @@
 		function fnc_delete(){
 			var result;
 			var replyListCount = $("#reply_1").length;
+			var role = "${user.role}";
 			if(replyListCount > 0){
-				alert("'"+$("#title").text()+"' 에 답글이 있어 삭제할수 없습니다.");
-				return;
+				if(role > 1){
+					alert("'"+$("#title").text()+"' 에 답글이 있어 삭제할수 없습니다.");
+					return;
+				}else{
+					result = confirm("'"+$("#title").text()+"' 글의 \n하위 답글도 모두 삭제됩니다. \n삭제하시겠습니까?")
+					if(result){
+						var boardNo = getParameterByName("boardNo");
+						location.href="/deleteBoard.do?boardNo="+boardNo;							
+					}
+				}
 			}else{
 				result = confirm("이 글을 삭제하시겠습니까?");
 				
@@ -236,8 +262,7 @@
 					var boardNo = getParameterByName("boardNo");
 					location.href="/deleteBoard.do?boardNo="+boardNo;				
 				}
-			}
-			
+			}			
 		}
 		
 		/************************************************** 답글작성페이지 이동 */

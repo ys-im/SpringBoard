@@ -88,6 +88,7 @@
 	</script>
 	<!-- Custom scripts for all pages-->
 	<script src="/resources/js/sb-admin-2.min.js"></script>
+	<script src="/resources/js/custom-common.js"></script>
 
 </body>
 

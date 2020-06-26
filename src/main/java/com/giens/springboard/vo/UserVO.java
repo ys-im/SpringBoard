@@ -10,6 +10,7 @@ public class UserVO {
 	private String active;
 	private String delFlag;
 	private String role;
+	private String logID;
 	
 	
 	/*
@@ -68,13 +69,18 @@ public class UserVO {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-
+	public String getLogID() {
+		return logID;
+	}
+	public void setLogID(String logID) {
+		this.logID = logID;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "UserVO [userID=" + userID + ", password=" + password + ", name=" + name + ", email=" + email
-				+ ", regDate=" + regDate + ", active=" + active + ", delFlag=" + delFlag + "]";
-	}
-
-	
+				+ ", regDate=" + regDate + ", active=" + active + ", delFlag=" + delFlag + ", role=" + role + ", logID="
+				+ logID + "]";
+	}	
 }

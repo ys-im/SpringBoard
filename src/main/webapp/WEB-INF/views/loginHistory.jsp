@@ -119,6 +119,7 @@
 	<script src="/resources/js/tui-grid.js"></script>
 	
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script>
 		/************************************************** 사용할 변수 선언 */
 		var dataSource;		

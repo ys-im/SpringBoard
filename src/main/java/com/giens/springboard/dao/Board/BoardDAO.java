@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.giens.springboard.vo.BoardVO;
-import com.giens.springboard.vo.Criteria;
 import com.giens.springboard.vo.SearchCriteria;
 
 public interface BoardDAO {	

@@ -98,9 +98,13 @@
 	</sql>
 	
 	<!-- 로그인 히스토리 등록 -->
-	<insert id="insertLoginHistory">
+	<insert id="insertLoginHistory" parameterType="com.giens.springboard.vo.LoginHistoryVO"  useGeneratedKeys="true" keyProperty="logID">
 		INSERT INTO LOG_HISTORY(USER_ID, IP_ADDRESS)
-		VALUES (#{userID}, #{ipAddress})
+		VALUES (#{loginHistoryVO.userID}, #{loginHistoryVO.ipAddress})
+		
+		<selectKey keyProperty="logID" resultType="Integer">
+        	SELECT LAST_INSERT_ID()
+    	</selectKey>
 	</insert>
 	
 	<!-- 로그아웃 히스토리 등록 -->
@@ -108,6 +112,7 @@
 		UPDATE LOG_HISTORY
 		SET LOGOUT_TIME = NOW()
 		WHERE USER_ID = #{userID}
+			and LOG_ID = #{logID}
 			and LOGOUT_TIME is null
 	</update>	
 	

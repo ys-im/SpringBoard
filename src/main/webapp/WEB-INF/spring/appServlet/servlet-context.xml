@@ -17,9 +17,7 @@
 		http://www.springframework.org/schema/util 
 		http://www.springframework.org/schema/util/spring-util-3.1.xsd		
 		http://www.springframework.org/schema/cache 
-		http://www.springframework.org/schema/cache/spring-cache.xsd
-    	http://www.springframework.org/schema/security
-    	http://www.springframework.org/schema/security/spring-security.xsd">
+		http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
@@ -41,12 +39,11 @@
 		<property name="maxInMemorySize" value="100000000" /> 
 	</bean> 
 	
-	<!-- 비밀번호 암호화 -->
-	<bean id="bcruptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
 	
 	<!-- <context:component-scan base-package="com.giens.springboard.controller" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan> -->
+	<context:annotation-config/>
 	<context:component-scan base-package="com.giens.springboard.controller"></context:component-scan>
 	<context:component-scan base-package="com.giens.springboard.service"></context:component-scan>
 	<context:component-scan base-package="com.giens.springboard.dao"></context:component-scan>

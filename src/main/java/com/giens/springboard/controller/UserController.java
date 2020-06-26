@@ -47,18 +47,21 @@ public class UserController {
 		logger.info("login");
 		System.out.println(userVO);
 		HttpSession session = req.getSession();
-		UserVO loginResult = userService.login(userVO);
+		UserVO loginResult = userService.getUser(userVO.getUserID());
 		
 		//암호화된 패스워드 비교
 		System.out.println(pwdEncoder.encode(userVO.getPassword()));
 		boolean pwdMatch = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
 		
 		//로그인 시간 등록
-		LoginHistoryVO loginHistoryVO = new LoginHistoryVO();
-		
+		LoginHistoryVO loginHistoryVO = new LoginHistoryVO();		
 		loginHistoryVO.setUserID(userVO.getUserID());
 		loginHistoryVO.setIpAddress(InetAddress.getLocalHost().getHostAddress());
-		userService.insertLoginHistory(loginHistoryVO);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("loginHistoryVO", loginHistoryVO);	
+		userService.insertLoginHistory(params);
+		int logID = (int) params.get("logID");
+		loginResult.setLogID(Integer.toString(logID));
 		
 		String result = "";
 		if(loginResult == null || !pwdMatch) {
@@ -77,7 +80,7 @@ public class UserController {
 	@RequestMapping(value = "/logout.do", method= RequestMethod.GET)
 	public String logout(HttpSession session) throws Exception{
 		UserVO userVO = (UserVO) session.getAttribute("user");
-		userService.updateLoginHistory(userVO.getUserID());
+		userService.updateLoginHistory(userVO);
 		session.invalidate();
 		return "redirect:/loginView.do";
 	}

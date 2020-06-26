@@ -150,6 +150,7 @@
 	<script src="/resources/js/tui-grid.js"></script>
 
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script>
 		var idCheck = 0;
 		var pwdCheck = 0;

@@ -61,13 +61,13 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void insertLoginHistory(LoginHistoryVO loginHistoryVO) throws Exception {
-		userDAO.insertLoginHistory(loginHistoryVO);
+	public void insertLoginHistory(Map<String, Object> params) throws Exception {
+		userDAO.insertLoginHistory(params);
 	}
 	
 	@Override
-	public void updateLoginHistory(String userID) throws Exception {
-		userDAO.updateLoginHistory(userID);
+	public void updateLoginHistory(UserVO userVO) throws Exception {
+		userDAO.updateLoginHistory(userVO);
 	}
 	
 	@Override

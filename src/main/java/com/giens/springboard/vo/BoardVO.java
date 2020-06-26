@@ -1,10 +1,5 @@
 package com.giens.springboard.vo;
 
-import java.util.Date;
-
-import org.apache.ibatis.annotations.AutomapConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class BoardVO {
 	
 	private String rowNo;

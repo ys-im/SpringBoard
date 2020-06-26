@@ -1,23 +1,19 @@
 package com.giens.springboard.dao.Board;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.giens.springboard.vo.BoardVO;
-import com.giens.springboard.vo.Criteria;
 import com.giens.springboard.vo.SearchCriteria;
 
 @Repository("boardDAO")
 public class BoardDAOImpl implements BoardDAO{
 	
-	@Inject
+	@Autowired
 	private SqlSessionTemplate sqlSession;
 	
 	//게시글 목록

@@ -142,6 +142,7 @@
 	<!-- <script src="/resources/js/file-drag-n-drop.js"></script> -->
 	
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script type="text/javascript">
 		var editor = new tui.Editor({
 			el : document.querySelector('#editSection'),
@@ -164,7 +165,7 @@
 		
 		$("#write").click(function(){			
 			var title = $("#title").val();
-			var userID = "테스트작성자";
+			var userID = "${writeInfo.userID}";
 			var contents = editor.getValue();
 
 	        var uploadFileList = Object.keys(fileList);

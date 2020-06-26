@@ -27,7 +27,7 @@
 <link href="/resources/css/tui-pagination.css" rel="stylesheet">
 </head>
 
-<body id="page-top">
+<body id="page-top" >
 	<!-- Page Wrapper -->
 	<div id="wrapper">
 		<!-- Sidebar -->
@@ -117,6 +117,7 @@
 	<script src="/resources/js/tui-grid.js"></script>
 
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script>
 		/************************************************* 사용할 변수 선언 */
 		var dataSource;		
@@ -334,6 +335,7 @@
 				fnc_readGridData(lastPage, perPageNum);
 			}
 		}
+		
 	</script>
 
 </body>

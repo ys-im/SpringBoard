@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -15,7 +16,6 @@ import com.giens.springboard.util.FileUtils;
 import com.giens.springboard.vo.BoardVO;
 import com.giens.springboard.vo.Criteria;
 import com.giens.springboard.vo.SearchCriteria;
-
 
 @Service("boardService")
 public class BoardServiceImpl implements BoardService{

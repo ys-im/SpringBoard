@@ -56,13 +56,14 @@ public class BoardController {
 	 * @reference AjaxController.java -> ajaxBoardList()	 	
 	 */
 	@RequestMapping(value = "/board.do", method = RequestMethod.GET)
-	public String getListBoard(HttpSession session) throws Exception {
+	public String getListBoard(HttpSession session, Model model) throws Exception {
 		logger.info("board view");	
 		
 		UserVO userVO = (UserVO) session.getAttribute("user");
 		if(userVO == null) {
 			return "redirect:/loginView.do";
 		}else {
+			model.addAttribute("user", userVO);
 			return "board/board";
 		}
 	}
@@ -101,6 +102,7 @@ public class BoardController {
 			map.put("groupLayer", groupLayer);
 			map.put("pBoardNo", pBoardNo);
 			map.put("replyCnt", replyCnt);		
+			map.put("userID", userVO.getUserID());
 			
 			model.addAttribute("writeInfo", map);
 			
@@ -120,8 +122,7 @@ public class BoardController {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("boardVO", boardVO);		
 		
-		//게시판 글 등록
-		
+		//게시판 글 등록		
 		boardService.addBoard(params);
 		int boardNo = (int)params.get("boardNo");
 		
@@ -164,6 +165,7 @@ public class BoardController {
 			List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
 			model.addAttribute("fileList", fileList);
 			model.addAttribute("searchCriteria", searchCriteria);
+			model.addAttribute("user", userVO);
 			
 			return "board/boardDetail";
 		}
@@ -210,6 +212,7 @@ public class BoardController {
 		}else {
 			List<BoardVO> boardVO = boardService.getBoard(boardNo);
 			model.addAttribute("edit", boardVO.get(0));	
+			model.addAttribute("userID", userVO.getUserID());
 			
 			List<Map<String, Object>> fileList = boardService.getBoardFileList(boardNo);
 			model.addAttribute("fileList", fileList);

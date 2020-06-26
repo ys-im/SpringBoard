@@ -136,6 +136,7 @@
 	<!-- <script src="/resources/js/file-drag-n-drop.js"></script> -->
 	
 	<!-- Page level custom scripts -->
+	<script src="/resources/js/custom-common.js"></script>
 	<script type="text/javascript">
 		/************************************************** editor 데이터 */	
 		var attachedFileList = new Array();
@@ -197,7 +198,7 @@
 		
 		$("#edit").click(function(){	
 			var title = $("#title").val();
-			var userID = "테스트작성자";
+			var userID = "${userID}";
 			var contents = editor.getValue();
 
 	        var uploadFileList = Object.keys(fileList);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+    
+	<!-- 비밀번호 암호화 -->
+	<bean id="bcruptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+	
+	<!-- session destroy listener -->
+	<!-- <bean id="sessionDestroyListener" class="com.giens.springboard.security.SessionDestroyListener"></bean>
+	 -->
+	<!-- 컴포넌트 관리 -->
+	<!-- <context:component-scan base-package="com.giens.springboard.dao"/> -->
+	
+    <!-- 정적 리소스 파일 -->
+    <!-- <sec:http pattern="/css/**" security="none" />
+    <sec:http pattern="/img/**" security="none" />
+    <sec:http pattern="/js/**" security="none" />
+    <sec:http pattern="/resources/**" security="none" />
+	<sec:http pattern="/loginView.do" security="none" />
+	<sec:http pattern="/logout.do" security="none" /> -->
+	
+    <!-- 인터셉터, 권한, 로그인 기능 설정 -->
+   	<!-- <sec:http auto-config="true" use-expressions="true" pattern="/**.do"> -->
+        <!-- 보안 관련 설정 -->
+        <!-- <sec:csrf disabled="true"/> -->
+        
+        <!-- 인터셉터 경로 설정 -->
+        <!-- <sec:intercept-url pattern="/login.do" access="hasAnyRole('user', 'admin')" /> -->
+        <!-- <sec:intercept-url pattern="/**.do" /> -->
+        
+        <!-- 폼 로그인 설정 -->
+       	<!-- <sec:form-login 
+	        username-parameter="userID" 
+	        password-parameter="password"
+	        login-page="/loginView.do"
+	        default-target-url="/"
+	    /> -->
+        
+        <!-- 로그아웃 설정 -->
+        <!-- <sec:logout         	
+            logout-url="/logout.do"  
+            logout-success-url="/loginView.do"
+            invalidate-session="true"
+            delete-cookies="JSESSIONID"
+        /> -->
+                    
+        <!-- 세션 관련 설정 -->
+        <!-- <sec:session-management>
+        	<sec:concurrency-control max-sessions="1"
+        	                         expired-url="/loginView.do"
+        	                         error-if-maximum-exceeded="true"/>
+        </sec:session-management> -->
+                
+   <!--  </sec:http> -->
+	
+    <!-- 권한 관리 -->
+    <!-- <sec:authentication-manager>
+        <sec:authentication-provider user-service-ref="userVO">
+        </sec:authentication-provider>
+    </sec:authentication-manager> -->
+    
+    <!-- <bean id="userVO" class="com.giens.springboard.security.CustomUserDetailsService"/> -->
+</beans>
