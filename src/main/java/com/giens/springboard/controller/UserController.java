@@ -49,19 +49,23 @@ public class UserController {
 		HttpSession session = req.getSession();
 		UserVO loginResult = userService.getUser(userVO.getUserID());
 		
-		//암호화된 패스워드 비교
-		System.out.println(pwdEncoder.encode(userVO.getPassword()));
-		boolean pwdMatch = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
-		
 		//로그인 시간 등록
 		LoginHistoryVO loginHistoryVO = new LoginHistoryVO();		
 		loginHistoryVO.setUserID(userVO.getUserID());
 		loginHistoryVO.setIpAddress(InetAddress.getLocalHost().getHostAddress());
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("loginHistoryVO", loginHistoryVO);	
+		params.put("loginHistoryVO", loginHistoryVO);
 		userService.insertLoginHistory(params);
 		int logID = (int) params.get("logID");
-		loginResult.setLogID(Integer.toString(logID));
+		
+		//암호화된 패스워드 비교
+		System.out.println(pwdEncoder.encode(userVO.getPassword()));
+		boolean pwdMatch = false;
+		if(loginResult != null) {
+			pwdMatch  = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
+			loginResult.setLogID(Integer.toString(logID));
+		}
+		
 		
 		String result = "";
 		if(loginResult == null || !pwdMatch) {
