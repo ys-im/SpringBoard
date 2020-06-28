@@ -44,4 +44,7 @@ public interface UserDAO {
 
 	public void addRole(UserVO userVO) throws Exception;
 	
+	public void userUpdate(UserVO userVO) throws Exception;
+	
+	
 }

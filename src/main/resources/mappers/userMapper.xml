@@ -127,4 +127,16 @@
 		INSERT INTO ROLE_MANAGEMENT(USER_ID, ROLE_ID)
 		VALUES (#{userID}, #{role})
 	</insert>
+	
+	<!-- 회원정보 수정 -->
+	<update id = "userUpdate">
+		UPDATE USER
+		SET 
+			password = #{password},
+			name = #{name},
+			email = #{email},
+			active = #{active}
+		WHERE USER_ID = #{userID}
+		</update>
+
 </mapper>

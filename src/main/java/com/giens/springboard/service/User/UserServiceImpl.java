@@ -80,6 +80,11 @@ public class UserServiceImpl implements UserService{
 		userDAO.addRole(userVO);
 	}
 
+	@Override
+	public void userUpdate(UserVO userVO) throws Exception {
+		userDAO.userUpdate(userVO);
+	}
+
 
 	
 }

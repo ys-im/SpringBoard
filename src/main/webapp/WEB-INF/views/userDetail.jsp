@@ -43,15 +43,15 @@
 					<div class="card shadow mb-4">
 						<div class="card-body">
 							<div>
-								<div class="form-inline mr-auto w-100 navbar-search mb-2">						
-									<button class="btn btn-primary" onclick="fnc_delete('${userDetail.userID}');"> 
-										<i class="fa fa-trash-alt"></i>&nbsp;삭제
-									</button>
-									<button class="btn btn-primary mr-0 ml-auto" onclick="fnc_save('${userDetail.userID}');"> 
-										<i class="fa fa-save"></i>&nbsp;저장
-									</button>
-								</div>	
-								<form name="registForm" method="POST" action="/regist.do">
+								<form name="updateForm" method="POST" action="/userUpdate.do">
+									<div class="form-inline mr-auto w-100 navbar-search mb-2">						
+										<button class="btn btn-primary" onclick="fnc_delete('${userDetail.userID}');"> 
+											<i class="fa fa-trash-alt"></i>&nbsp;삭제
+										</button>
+										<button class="btn btn-primary mr-0 ml-auto" type="button" onclick="update()"> 
+											<i class="fa fa-save"></i>&nbsp;저장
+										</button>
+									</div>	
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">아이디</div>	
 										<div class="col-sm-10">
@@ -94,7 +94,7 @@
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">활동상태</div>
 										<div class="col-sm-10">
-											<select id="active" class="form-control">
+											<select id="active" name="active" class="form-control">
 												<option value="Y">활동</option>
 												<option value="N">비활동</option>
 											</select>
@@ -161,14 +161,15 @@
 				$("input:radio[name='role']:radio[value='1']").prop("checked", true);
 			}else if(role==2){
 				$("input:radio[name='role']:radio[value='2']").prop("checked", true);
+			}			
+		
+			var active = "${userDetail.active}";
+			if(active == "Y"){
+				$("#active").val("Y").prop("selected", true);
+			}else{
+				$("#active").val("N").prop("selected", true);
 			}
 		});
-	
-		function fnc_save(userID){
-			if(confirm("사용자 '"+userID+"'의 정보를 변경하시겠습니까?")){
-				location.href = "/userEdit.do?userID="+userID;
-			}
-		}
 	
 		function fnc_delete(userID){
 			if(confirm("사용자 '"+userID+"' 를 삭제하시겠습니까?")){							
@@ -176,6 +177,76 @@
 			}
 		}
 		
+		function checkPwd(){
+			var pw = $("#password").val();
+			var r_pw = $("#repeatPassword").val();
+			
+	        if(r_pw=="" && (pw != r_pw || pw == r_pw)){
+	            $("#repeatPassword").css("background-color", "#FFCECE");
+	            pwdCheck = 0;
+	        }
+	        else if (pw == r_pw) {
+	            $("#repeatPassword").css("background-color", "#B0F6AC");
+	            pwdCheck = 1;
+	        } else if (pw != r_pw) {
+	            $("#repeatPassword").css("background-color", "#FFCECE");	
+	            pwdCheck = 0;            
+	        }
+		}
+		
+		function checkEmail(){
+			var str = $("#email").val();
+			var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			if (regExp.test(str)){
+				return true;
+			}else {
+				return false;
+			}
+		}
+		
+		function update(){
+			var updateForm = document.updateForm;
+			var userID = updateForm.userID.value;
+			var password = updateForm.password.value;
+			var name = updateForm.name.value;
+			var email = updateForm.email.value;
+			var active = updateForm.active.value;
+			var role = $("input[name='role']:checked").val();
+						
+			if(!password){
+				alert("비밀번호를 입력해주세요.");
+				$("#password").focus();
+				return;
+			}else if(pwdCheck == 0){
+				alert("비밀번호가 일치하지 않습니다.");
+				$("#repeatPassword").focus();
+				return;
+			}
+			
+			if(!name){
+				alert("이름을 입력해주세요.");
+				$("#name").focus();
+				return;
+			}
+			
+			if(!email){
+				alert("이메일을 입력해주세요.");
+				$("#email").focus();
+				return;
+			}
+			
+			updateForm.submit();			
+		}
+		//공백제거 function
+		function fnc_spacebar(obj){
+			var str_space = /\s/; //공백체크
+			if(str_space.exec(obj.value)){
+				alert("해당 항목에는 공백을 사용할 수 없습니다. \n\n공백은 자동적으로 제거 됩니다.");
+				obj.focus();
+				obj.value = obj.value.replace(' ', '');//공백제거
+				return false;
+			}
+		}
 	</script>
 </body>
 </html>

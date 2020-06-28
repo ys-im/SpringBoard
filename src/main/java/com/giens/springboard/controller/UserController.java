@@ -63,18 +63,25 @@ public class UserController {
 		boolean pwdMatch = false;
 		if(loginResult != null) {
 			pwdMatch  = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
-			loginResult.setLogID(Integer.toString(logID));
-			
-			
+			loginResult.setLogID(Integer.toString(logID));		
 		}
 		
 		
 		String result = "";
+		System.out.println("=========================> 활성화 : "+loginResult.getActive());
+		
+		
 		if(loginResult == null || !pwdMatch) {
 			session.setAttribute("user", null);
 			rttr.addFlashAttribute("msg", false);
 			result = "redirect:/loginView.do";
+		} else if(loginResult.getActive().equals("N")) {
+			System.out.println("===============>  휴면계정입니다");
+			session.setAttribute("user", null);
+			rttr.addFlashAttribute("msg", "N");
+			result="redirect:/loginView.do";
 		} else {
+			System.out.println("===============>  활성화된 계정입니다");
 			session.setAttribute("user", loginResult);
 			result = "redirect:/board.do";
 		}
@@ -157,6 +164,19 @@ public class UserController {
 		
 		userService.deleteUser(userID);
 		return "redirect:/user.do";
+	}
+	
+	//사용자 업데이트
+	@RequestMapping(value="/userUpdate.do", method = RequestMethod.POST)
+	public String updateUser(UserVO userVo) throws Exception{
+		logger.info("user update");
+		//비밀번호 암호화
+		String inputPass = userVo.getPassword();
+		String pwd = pwdEncoder.encode(inputPass);
+		userVo.setPassword(pwd);
+		
+		userService.userUpdate(userVo);
+		return "redirect:/userDetail.do?userID="+userVo.getUserID();
 	}
 	
 }

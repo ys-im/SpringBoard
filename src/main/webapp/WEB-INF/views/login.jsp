@@ -67,11 +67,8 @@
 					</div> 
 					-->
 
-					<c:if test="${user != null }">
-						<div>
-							<p>${user.userId}님환영합니다.</p>
-							<button id="logoutBtn" type="button">로그아웃</button>
-						</div>
+					<c:if test="${msg == 'N'}">
+						<p>회원님은 휴면상태 입니다. 관리자에게 문의해주세요.</p>
 					</c:if>
 					<c:if test="${msg == false}">
 						<p style="color: red;">로그인 실패! 아이디와 비밀번호 확인해주세요.</p>

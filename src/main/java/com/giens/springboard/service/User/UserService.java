@@ -45,6 +45,7 @@ public interface UserService {
 	//사용자 삭제
 	public void deleteUser(String userID) throws Exception;
 
-	
 	public void addRole(UserVO userVO) throws Exception;
+	
+	public void userUpdate(UserVO userVO) throws Exception;
 }
