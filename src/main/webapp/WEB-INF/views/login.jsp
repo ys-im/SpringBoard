@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 
@@ -45,8 +45,7 @@
 					<hr>
 					<div class="form-group">
 						<input type="text" class="form-control form-control-user"
-							id="userID" name="userID" 
-							placeholder="ID">
+							id="userID" name="userID" placeholder="ID">
 					</div>
 					<div class="form-group">
 						<input type="password" class="form-control form-control-user"
@@ -61,10 +60,24 @@
 					</div>
 					<button class="btn btn-primary btn-user btn-block" type="submit">Login</button>
 					<hr>
-					
-					<div class="text-center">
+
+					<!--					
+ 					<div class="text-center">
 						<a class="small" href="forgot-password.html">Forgot Password?</a>
-					</div>
+					</div> 
+					-->
+
+					<c:if test="${user != null }">
+						<div>
+							<p>${user.userId}님환영합니다.</p>
+							<button id="logoutBtn" type="button">로그아웃</button>
+						</div>
+					</c:if>
+					<c:if test="${msg == false}">
+						<p style="color: red;">로그인 실패! 아이디와 비밀번호 확인해주세요.</p>
+					</c:if>
+
+
 				</form>
 
 			</div>
@@ -72,6 +85,10 @@
 		</div>
 
 	</div>
+	
+	
+	
+	
 
 	<!-- Bootstrap core JavaScript-->
 	<script src="/resources/vendor/jquery/jquery.min.js"></script>

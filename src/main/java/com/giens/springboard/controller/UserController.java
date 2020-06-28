@@ -64,6 +64,8 @@ public class UserController {
 		if(loginResult != null) {
 			pwdMatch  = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
 			loginResult.setLogID(Integer.toString(logID));
+			
+			
 		}
 		
 		
