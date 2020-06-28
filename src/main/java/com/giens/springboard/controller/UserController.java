@@ -141,10 +141,12 @@ public class UserController {
 	
 	//사용자 상세보기
 	@RequestMapping(value="/userDetail.do")
-	public String getUser(String userID, Model model) throws Exception {
+	public String getUser(String userID, Model model, HttpSession session) throws Exception {
 		logger.info("user detaile");
 		UserVO userVO = userService.getUser(userID);
-		model.addAttribute("user", userVO);
+		UserVO sessionUserVO = (UserVO) session.getAttribute("user");
+		model.addAttribute("user", sessionUserVO);
+		model.addAttribute("userDetail", userVO);
 		return "userDetail";
 	}
 	

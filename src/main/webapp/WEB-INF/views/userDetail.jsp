@@ -44,10 +44,10 @@
 						<div class="card-body">
 							<div>
 								<div class="form-inline mr-auto w-100 navbar-search mb-2">						
-									<button class="btn btn-primary" onclick="fnc_delete('${user.userID}');"> 
+									<button class="btn btn-primary" onclick="fnc_delete('${userDetail.userID}');"> 
 										<i class="fa fa-trash-alt"></i>&nbsp;삭제
 									</button>
-									<button class="btn btn-primary mr-0 ml-auto" onclick="fnc_save('${user.userID}');"> 
+									<button class="btn btn-primary mr-0 ml-auto" onclick="fnc_save('${userDetail.userID}');"> 
 										<i class="fa fa-save"></i>&nbsp;저장
 									</button>
 								</div>	
@@ -56,7 +56,7 @@
 										<div class="form-inline col-sm-2">아이디</div>	
 										<div class="col-sm-10">
 											<input type="text" class="form-control form-control-user" readonly 
-												id="userID" name="userID" value="${user.userID}">
+												id="userID" name="userID" value="${userDetail.userID}">
 										</div>
 									</div>
 									
@@ -79,7 +79,7 @@
 									<div class="form-group row">
 										<div class="form-inline col-sm-2">이름</div>
 										<div class="col-sm-10">
-											<input type="text" class="form-control" id="name" name="name" value="${user.name}">
+											<input type="text" class="form-control" id="name" name="name" value="${userDetail.name}">
 										</div>
 									</div>
 									
@@ -87,7 +87,7 @@
 										<div class="form-inline col-sm-2">이메일</div>
 										<div class="col-sm-10">
 											<input type="email" class="form-control" id="email" name="email" oninput="checkEmail()" 
-												 onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);" value="${user.email}">
+												 onkeyup="fnc_spacebar(this);" onchange="fnc_spacebar(this);" value="${userDetail.email}">
 										</div>
 									</div>
 									
@@ -156,7 +156,7 @@
 	<script src="/resources/js/custom-common.js"></script>
 	<script > 
 		$(document).ready(function(){
-			var role = ${user.role};
+			var role = ${userDetail.role};
 			if(role==1){
 				$("input:radio[name='role']:radio[value='1']").prop("checked", true);
 			}else if(role==2){
