@@ -225,16 +225,14 @@
 				header : '접속 IP',
 				name : 'ipAddress',
 				align : 'center'
-			}],
-			
-			rowHeaders: ['checkbox']
+			}]
 		});
 		
-		$(document).ready(function(){
-			if(profile){
+		$(document).ready(function(){			
+			if($("#profile").val() == "true"){
 				var userID = $("#userDropdown span").text().trim();
 				fnc_user_click(userID);
-			}else{
+			} else{
 				fnc_readGridData(startPage, perPageNum);
 			}
 		});

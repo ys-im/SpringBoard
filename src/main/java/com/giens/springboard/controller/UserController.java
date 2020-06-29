@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.annotations.Param;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContext;
 
 import com.giens.springboard.service.User.UserService;
 import com.giens.springboard.vo.LoginHistoryVO;
@@ -138,13 +142,21 @@ public class UserController {
 		
 		return idCheckValue;
 	}
+	
 	@RequestMapping(value="/loginHistory.do")
-	public String loginHistoryList(boolean profile, Model model, HttpSession session) throws Exception{
+	public String loginHistoryList(HttpServletRequest request, Model model, HttpSession session) throws Exception{
 		logger.info("login history");
-		if(session.getAttribute("user") == null) {
+		UserVO loginUser = (UserVO) session.getAttribute("user");
+		if(loginUser == null) {
 			return "redirect:/loginView.do";
 		}else {	
-			model.addAttribute("profile", profile);
+			String queryString = request.getQueryString();
+			if (queryString != null) {
+				model.addAttribute("profile", true);
+			} else {
+				model.addAttribute("profile", false);
+			}
+			//model.addAttribute("userRole", loginUser.getRole());
 			return "loginHistory";
 		}
 	}
