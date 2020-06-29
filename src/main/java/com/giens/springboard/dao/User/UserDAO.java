@@ -46,5 +46,6 @@ public interface UserDAO {
 	
 	public void userUpdate(UserVO userVO) throws Exception;
 	
+	public void selfUpdate(UserVO userVO) throws Exception;
 	
 }

@@ -179,4 +179,26 @@ public class UserController {
 		return "redirect:/userDetail.do?userID="+userVo.getUserID();
 	}
 	
+	//사용자 업데이트2
+	@RequestMapping(value="/selfDetailView.do")
+	public String selfDetailView(Model model, HttpSession session) throws Exception{
+		logger.info("self detail");
+		UserVO sessionUserVO = (UserVO) session.getAttribute("user");
+		model.addAttribute("user", sessionUserVO);
+		return "selfDetail";
+	}
+	@RequestMapping(value="/selfDetail.do", method = RequestMethod.POST)
+	public String updateSelf(UserVO userVo) throws Exception{
+		logger.info("user update");
+		//비밀번호 암호화
+		String inputPass = userVo.getPassword();
+		String pwd = pwdEncoder.encode(inputPass);
+		userVo.setPassword(pwd);
+		
+		userService.selfUpdate(userVo);
+		return "redirect:/selfDetailView.do?userID="+userVo.getUserID();
+	}
+	
+	
+	
 }

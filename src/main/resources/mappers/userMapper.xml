@@ -138,5 +138,16 @@
 			active = #{active}
 		WHERE USER_ID = #{userID}
 		</update>
+		
+	<!-- 회원정보 수정2 -->
+	<update id = "selfUpdate">
+		UPDATE USER
+		SET
+			password = #{password},
+			name = #{name},
+			email = #{email}
+		WHERE USER_ID = #{userID}
+	</update>
+		
 
 </mapper>
