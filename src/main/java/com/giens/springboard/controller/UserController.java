@@ -139,11 +139,12 @@ public class UserController {
 		return idCheckValue;
 	}
 	@RequestMapping(value="/loginHistory.do")
-	public String loginHistoryList(String userID, HttpSession session) throws Exception{
+	public String loginHistoryList(boolean profile, Model model, HttpSession session) throws Exception{
 		logger.info("login history");
 		if(session.getAttribute("user") == null) {
 			return "redirect:/loginView.do";
 		}else {	
+			model.addAttribute("profile", profile);
 			return "loginHistory";
 		}
 	}

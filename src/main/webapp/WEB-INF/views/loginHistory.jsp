@@ -71,6 +71,7 @@
 										</button>
 									</div>
 								</div>
+								<input type="hidden" id="profile" name="profile" value="${profile}">
 								
 								<!-- Toast UI grid Start -->
 								<div class="code-html contents">
@@ -140,7 +141,7 @@
 				let userID = props.value;
 								
 				aTag.innerHTML = userID;
-				aTag.href = "/loginHistoryList.do?page="+startPage+"&perPage="+perPageNum+"serachType=userID&keyword="+userID;
+				aTag.href = "javascript:fnc_user_click('"+userID+"');";
 				aTag.className = "uID";
 				aTag.style = "margin-left: 10px";
 				
@@ -230,7 +231,12 @@
 		});
 		
 		$(document).ready(function(){
-			fnc_readGridData(startPage, perPageNum);
+			if(profile){
+				var userID = $("#userDropdown span").text().trim();
+				fnc_user_click(userID);
+			}else{
+				fnc_readGridData(startPage, perPageNum);
+			}
 		});
 		
 		$("#searchButton").click(function(){
@@ -239,6 +245,11 @@
 			
 			fnc_readGridData(startPage, perPageNum);
 		});
+		
+		function fnc_user_click(userID){
+			$("#search").val(userID);
+			$("#searchButton").click();
+		}
 		
 		function fnc_readGridData(startPage, perPageNum){
 			$.ajax({
