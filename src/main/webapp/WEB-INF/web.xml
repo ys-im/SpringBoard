@@ -79,5 +79,7 @@
     	<param-name>contextConfigLocation</param-name>
     	<param-value>/WEB-INF/spring/security-context.xml</param-value>
     </context-param> -->
-    
+    <welcome-file-list> 
+    	<welcome-file>/loginView.do</welcome-file> 
+    </welcome-file-list>
 </web-app>

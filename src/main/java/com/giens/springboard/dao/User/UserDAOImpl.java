@@ -99,6 +99,11 @@ public class UserDAOImpl implements UserDAO{
 		sqlSession.update("userMapper.selfUpdate", userVO);
 	}
 
+	@Override
+	public void roleUpdate(UserVO userVO) throws Exception {
+		sqlSession.update("userMapper.roleUpdate", userVO);		
+	}
+
 
 
 }

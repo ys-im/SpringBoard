@@ -36,6 +36,7 @@ public class UserController {
 	@Autowired
 	BCryptPasswordEncoder pwdEncoder;
 	
+	
 	@RequestMapping(value = "/loginView.do")
 	public String loginView() {
 		logger.info("login view");
@@ -55,22 +56,19 @@ public class UserController {
 		loginHistoryVO.setIpAddress(InetAddress.getLocalHost().getHostAddress());
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("loginHistoryVO", loginHistoryVO);
-		userService.insertLoginHistory(params);
-		int logID = (int) params.get("logID");
 		
 		//암호화된 패스워드 비교
 		System.out.println(pwdEncoder.encode(userVO.getPassword()));
 		boolean pwdMatch = false;
 		if(loginResult != null) {
+			userService.insertLoginHistory(params);
+			int logID = (int) params.get("logID");
 			pwdMatch  = pwdEncoder.matches(userVO.getPassword(), loginResult.getPassword());
 			loginResult.setLogID(Integer.toString(logID));		
 		}
 		
 		
-		String result = "";
-		System.out.println("=========================> 활성화 : "+loginResult.getActive());
-		
-		
+		String result = "";		
 		if(loginResult == null || !pwdMatch) {
 			session.setAttribute("user", null);
 			rttr.addFlashAttribute("msg", false);
@@ -95,6 +93,7 @@ public class UserController {
 		UserVO userVO = (UserVO) session.getAttribute("user");
 		userService.updateLoginHistory(userVO);
 		session.invalidate();
+		
 		return "redirect:/loginView.do";
 	}
 	
@@ -140,65 +139,58 @@ public class UserController {
 		return idCheckValue;
 	}
 	@RequestMapping(value="/loginHistory.do")
-	public String loginHistoryList(String userID) throws Exception{
+	public String loginHistoryList(String userID, HttpSession session) throws Exception{
 		logger.info("login history");
-		
-		return "loginHistory";
+		if(session.getAttribute("user") == null) {
+			return "redirect:/loginView.do";
+		}else {	
+			return "loginHistory";
+		}
 	}
 	
 	//사용자 상세보기
 	@RequestMapping(value="/userDetail.do")
 	public String getUser(String userID, Model model, HttpSession session) throws Exception {
-		logger.info("user detaile");
-		UserVO userVO = userService.getUser(userID);
-		UserVO sessionUserVO = (UserVO) session.getAttribute("user");
-		model.addAttribute("user", sessionUserVO);
-		model.addAttribute("userDetail", userVO);
-		return "userDetail";
+		logger.info("user detail");
+		if(session.getAttribute("user") == null) {
+			return "redirect:/loginView.do";
+		}else {	
+			UserVO userVO = userService.getUser(userID);
+			UserVO sessionUserVO = (UserVO) session.getAttribute("user");
+			model.addAttribute("user", sessionUserVO);
+			model.addAttribute("userDetail", userVO);
+			return "userDetail";
+		}
 	}
 	
 	//사용자 삭제
 	@RequestMapping(value="/userDelete.do")
-	public String deleteUser(String userID) throws Exception {
+	public String deleteUser(String userID, HttpSession session) throws Exception {
 		logger.info("user delete");
-		
-		userService.deleteUser(userID);
-		return "redirect:/user.do";
+		if(session.getAttribute("user") == null) {
+			return "redirect:/loginView.do";
+		}else {	
+			userService.deleteUser(userID);
+			return "redirect:/user.do";
+		}
 	}
 	
 	//사용자 업데이트
 	@RequestMapping(value="/userUpdate.do", method = RequestMethod.POST)
-	public String updateUser(UserVO userVo) throws Exception{
+	public String updateUser(UserVO userVo, HttpSession session) throws Exception{
 		logger.info("user update");
-		//비밀번호 암호화
-		String inputPass = userVo.getPassword();
-		String pwd = pwdEncoder.encode(inputPass);
-		userVo.setPassword(pwd);
-		
-		userService.userUpdate(userVo);
-		return "redirect:/userDetail.do?userID="+userVo.getUserID();
+		if(session.getAttribute("user") == null) {
+			return "redirect:/loginView.do";
+		}else {	
+			//비밀번호 암호화
+			String inputPass = userVo.getPassword();
+			String pwd = pwdEncoder.encode(inputPass);
+			userVo.setPassword(pwd);
+			
+			userService.userUpdate(userVo);
+			userService.roleUpdate(userVo);
+			return "redirect:/userDetail.do?userID="+userVo.getUserID();
+		}
 	}
-	
-	//사용자 업데이트2
-	@RequestMapping(value="/selfDetailView.do")
-	public String selfDetailView(Model model, HttpSession session) throws Exception{
-		logger.info("self detail");
-		UserVO sessionUserVO = (UserVO) session.getAttribute("user");
-		model.addAttribute("user", sessionUserVO);
-		return "selfDetail";
-	}
-	@RequestMapping(value="/selfDetail.do", method = RequestMethod.POST)
-	public String updateSelf(UserVO userVo) throws Exception{
-		logger.info("user update");
-		//비밀번호 암호화
-		String inputPass = userVo.getPassword();
-		String pwd = pwdEncoder.encode(inputPass);
-		userVo.setPassword(pwd);
-		
-		userService.selfUpdate(userVo);
-		return "redirect:/selfDetailView.do?userID="+userVo.getUserID();
-	}
-	
-	
 	
 }

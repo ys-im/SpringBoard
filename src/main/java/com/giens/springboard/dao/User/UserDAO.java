@@ -48,4 +48,6 @@ public interface UserDAO {
 	
 	public void selfUpdate(UserVO userVO) throws Exception;
 	
+	public void roleUpdate(UserVO userVO) throws Exception;
+	
 }

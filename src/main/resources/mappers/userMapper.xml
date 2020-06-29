@@ -137,8 +137,8 @@
 			email = #{email},
 			active = #{active}
 		WHERE USER_ID = #{userID}
-		</update>
-		
+	</update>
+	
 	<!-- 회원정보 수정2 -->
 	<update id = "selfUpdate">
 		UPDATE USER
@@ -148,6 +148,13 @@
 			email = #{email}
 		WHERE USER_ID = #{userID}
 	</update>
-		
+	
+	<!-- 회원정보 관리자 권한 수정 -->
+	<update id="roleUpdate">
+		UPDATE ROLE_MANAGEMENT
+		SET
+			ROLE_ID = #{role}
+		WHERE USER_ID = #{userID}
+	</update>
 
 </mapper>

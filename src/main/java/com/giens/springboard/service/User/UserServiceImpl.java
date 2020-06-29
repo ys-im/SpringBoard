@@ -90,6 +90,11 @@ public class UserServiceImpl implements UserService{
 		userDAO.selfUpdate(userVO);
 	}
 
+	@Override
+	public void roleUpdate(UserVO userVO) throws Exception {
+		userDAO.roleUpdate(userVO);		
+	}
+
 
 	
 }
