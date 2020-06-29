@@ -98,6 +98,7 @@
 					<input type="hidden" id="perPageNum" name="perPageNum" value="${searchCriteria.perPageNum}">
 					<input type="hidden" id="searchType" name="searchType" value="${searchCriteria.searchType}">
 					<input type="hidden" id="keyword" name="keyword" value="${searchCriteria.keyword}">
+					<input type="hidden" id="FILE_NO" name="FILE_NO">
 				</form>
 			</section>
 			
