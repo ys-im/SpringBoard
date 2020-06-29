@@ -14,7 +14,7 @@
 	<bean id="bcruptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
 	
 	<!-- session destroy listener -->
-	<bean id="sessionDestroyListener" class="com.giens.springboard.security.SessionDestroyListener"></bean>
+	<!-- <bean id="sessionDestroyListener" class="com.giens.springboard.security.SessionDestroyListener"></bean> -->
 	
 	<!-- 컴포넌트 관리 -->
 	<!-- <context:component-scan base-package="com.giens.springboard.dao"/> -->

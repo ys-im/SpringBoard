@@ -82,4 +82,8 @@
     <welcome-file-list> 
     	<welcome-file>/loginView.do</welcome-file> 
     </welcome-file-list>
+    
+    <session-config>
+    	<session-timeout>-1</session-timeout>
+    </session-config>
 </web-app>
