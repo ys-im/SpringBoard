@@ -61,6 +61,8 @@ public class BoardController {
 		
 		UserVO userVO = (UserVO) session.getAttribute("user");
 		if(userVO == null) {
+			System.out.println("userVO null");
+
 			return "redirect:/loginView.do";
 		}else {
 			model.addAttribute("user", userVO);
@@ -94,7 +96,7 @@ public class BoardController {
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 			if(title != "") {
-				title = "  Re : "+title;
+				title = "  Re : "+title; //대댓글
 			}
 			map.put("title", title);
 			map.put("originNo", originNo);
@@ -186,11 +188,15 @@ public class BoardController {
 		
 		//파일을 저장했던 위치에서 첨부파일을 읽어  byte[]형식으로 변환		
 		File file = new File(filePath+storedFileName);
+		System.out.println("filePath+storedFileName : "+filePath+storedFileName);
+		System.out.println("storedFileName : "+storedFileName);
+		System.out.println("filePath : "+filePath);
 		byte fileByte[] = org.apache.commons.io.FileUtils.readFileToByteArray(file);
+		System.out.println("fileByte.length : "+fileByte.length);
 		
-		response.setContentType("application/octet-stream");
-		response.setContentLength(fileByte.length);
-		response.setHeader("Content-Disposition",  "attachment; fileName=\""+URLEncoder.encode(fileName, "UTF-8")+"\";");
+		response.setContentType("application/octet-stream"); //application(모든 종류의 이진 데이터 나타냄)/octet-stream : 알려지지 않은 파일 타입
+		response.setContentLength(fileByte.length); //Http 내용 길이 헤더를 설정
+		response.setHeader("Content-Disposition",  "attachment; fileName=\""+URLEncoder.encode(fileName, "UTF-8")+"\";"); 
 		response.getOutputStream().write(fileByte);
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
