@@ -214,6 +214,7 @@
 				return;
 			}
 			
+			alert("변경 되었습니다");
 			updateForm.submit();			
 		}
 		//공백제거 function

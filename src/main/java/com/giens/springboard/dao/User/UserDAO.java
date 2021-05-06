@@ -1,5 +1,6 @@
 package com.giens.springboard.dao.User;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -50,4 +51,12 @@ public interface UserDAO {
 	
 	public void roleUpdate(UserVO userVO) throws Exception;
 	
+	//자동로그인 정보 저장
+	public void keepLogin(Map<String, Object> params) throws Exception;
+	//이전로그인 확인
+	public UserVO checkUserWithSessionKey(String sessionId) throws Exception;
+	//사용자 중지
+	public void ActiveUser(Map<String, String> map) throws Exception;
+
+
 }

@@ -1,5 +1,6 @@
 package com.giens.springboard.service.User;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -52,4 +53,11 @@ public interface UserService {
 	public void selfUpdate(UserVO userVO) throws Exception;
 	
 	public void roleUpdate(UserVO userVO) throws Exception;
+	
+	//자동로그인 쿠키 저장
+	public void keepLoin(Map<String, Object> params) throws Exception;
+	//이전로그인 확인
+	public UserVO checkUserWithSessionKey(String sessionId) throws Exception;
+	//사용자 중지
+	public void ActiveUser(Map<String, String> map) throws Exception;
 }

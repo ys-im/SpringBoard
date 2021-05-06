@@ -94,6 +94,7 @@
 		<if test="searchType != null">
 			<if test="searchType == 'name'.toString()">AND NAME LIKE CONCAT('%',#{keyword},'%')</if>
 			<if test="searchType == 'userID'.toString()">AND USER_ID LIKE CONCAT('%',#{keyword},'%')</if>
+			<if test="searchType == 'active'.toString()">AND ACTIVE LIKE CONCAT('%',#{keyword},'%')</if>
 		</if>
 	</sql>
 	
@@ -156,5 +157,41 @@
 			ROLE_ID = #{role}
 		WHERE USER_ID = #{userID}
 	</update>
-
-</mapper>
+	<!-- 자동로그인 정보 저장 -->
+	<update id="userMapper.keepLogin" parameterType="hashMap">
+		UPDATE user
+		SET 
+			session_id = #{session_id},
+			limit_time = #{limit_time}
+		WHERE user_id = #{userID}
+	</update>
+	<!-- 세션id와 유효시간 확인  -->
+	<select id="userMapper.checkUserWithSessionKey" resultType="com.giens.springboard.vo.UserVO">
+	SELECT
+		 u.USER_ID as userID
+		 , u.PASSWORD as password
+		 , u.NAME
+		 , u.EMAIL
+		 , u.ACTIVE
+		 , u.REG_DATE as regDate
+		 , u.DEL_FLAG as delFlag
+		 , u.SESSION_ID
+		 , u.LIMIT_TIME
+		 , r.ROLE_ID as role
+	FROM user as u JOIN role_management as r
+	ON u.USER_ID = r.USER_ID
+	WHERE session_id = #{session_id} 
+		AND limit_time > now()
+	</select>
+	<!-- 사용자 중지  -->
+	<update id="userMapper.ActiveUser" parameterType="hashMap">
+		UPDATE USER
+		SET
+			<choose>
+				<when test="active == 'N'.toString()">active = 'Y'</when>
+				<otherwise>active = 'N'</otherwise>
+			</choose>	
+		
+		WHERE USER_ID = #{userID}
+	</update>
+ </mapper>

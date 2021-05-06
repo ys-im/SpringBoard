@@ -18,7 +18,8 @@
 		http://www.springframework.org/schema/util/spring-util-3.1.xsd		
 		http://www.springframework.org/schema/cache 
 		http://www.springframework.org/schema/cache/spring-cache.xsd">
-
+		
+		<bean id="userInterceptor" class="com.giens.springboard.interceptor.UserInterceptor"></bean>
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
@@ -38,7 +39,16 @@
 				<property name="useCacheControlNoStore" value="true" />
 			</bean>
 		</mvc:interceptor>
-	</mvc:interceptors>
+ 		<mvc:interceptor>
+			 
+			<mvc:mapping path="/**/"/>
+			<ref bean="userInterceptor"/>
+		</mvc:interceptor>
+<!-- 		<mvc:interceptor>
+			<mvc:mapping path="/login.do"/>
+			<ref bean="autoLoginInterceptor"/>
+		</mvc:interceptor>
+ -->	</mvc:interceptors>
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

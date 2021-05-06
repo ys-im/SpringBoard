@@ -1,5 +1,7 @@
 package com.giens.springboard.vo;
 
+import java.sql.Date;
+
 public class UserVO {
 	
 	private String userID;
@@ -11,6 +13,8 @@ public class UserVO {
 	private String delFlag;
 	private String role;
 	private String logID;
+	private String session_id;
+	private Date  limit_time;
 	
 	
 	/*
@@ -23,6 +27,18 @@ public class UserVO {
 	
 	public String getUserID() {
 		return userID;
+	}
+	public String getSession_id() {
+		return session_id;
+	}
+	public void setSession_id(String session_id) {
+		this.session_id = session_id;
+	}
+	public Date getLimite_time() {
+		return limit_time;
+	}
+	public void setLimite_time(Date limite_time) {
+		this.limit_time = limite_time;
 	}
 	public void setUserID(String userID) {
 		this.userID = userID;

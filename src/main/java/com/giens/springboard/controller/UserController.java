@@ -1,15 +1,16 @@
 package com.giens.springboard.controller;
 
 import java.net.InetAddress;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.ibatis.annotations.Param;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContext;
+
 
 import com.giens.springboard.service.User.UserService;
 import com.giens.springboard.vo.LoginHistoryVO;
@@ -47,12 +48,19 @@ public class UserController {
 		return "login";
 	}
 	
-	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
-	public String login(UserVO userVO, HttpServletRequest req, RedirectAttributes rttr) throws Exception {
+	
+	@RequestMapping(value = "/login.do", method = {RequestMethod.POST,RequestMethod.GET})
+	public String login(UserVO userVO, HttpServletRequest req, RedirectAttributes rttr, HttpServletResponse res,Model model) throws Exception {
 		logger.info("login");
 		System.out.println(userVO);
 		HttpSession session = req.getSession();
 		UserVO loginResult = userService.getUser(userVO.getUserID());
+		
+		System.out.println(" HttpServletRequest header Date : "+req.getHeader("Date"));
+		System.out.println(" HttpServletRequest header Pragma : "+req.getHeader("Pragma "));
+		System.out.println(" HttpServletRequest header Cache-Control : "+req.getHeader("Cache-Control"));
+		System.out.println(" HttpServletRequest header Content-Length : "+req.getHeader("Content-Length"));
+		
 		
 		//로그인 시간 등록
 		LoginHistoryVO loginHistoryVO = new LoginHistoryVO();		
@@ -78,17 +86,32 @@ public class UserController {
 			rttr.addFlashAttribute("msg", false);
 			result = "redirect:/loginView.do";
 		} else if(loginResult.getActive().equals("N")) {
-			System.out.println("===============>  휴면계정입니다");
+			//System.out.println("===============>  휴면계정입니다");
 			session.setAttribute("user", null);
 			rttr.addFlashAttribute("msg", "N");
 			result="redirect:/loginView.do";
 		} else {
-			System.out.println("===============>  활성화된 계정입니다");
+			//System.out.println("===============>  활성화된 계정입니다");
 			session.setAttribute("user", loginResult);
+			if(req.getParameter("customCheck") != null) {
+				System.out.println("자동로그인용 쿠키 생성");
+				Cookie loginCookie = new Cookie("autoLogin", session.getId());
+				loginCookie.setPath("/");
+				loginCookie.setMaxAge(60*60*24*3);
+				res.addCookie(loginCookie);
+				//현재 세션id와 유효시간을 user TB에 저장
+				int amount = 60*60*24*7;
+				Date sessionLimit = new Date(System.currentTimeMillis()+(1000*amount));
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("userID", loginResult.getUserID());
+				//System.out.println("로그인 map userID : "+loginResult.getUserID());
+				map.put("session_id", session.getId());
+				map.put("limit_time", sessionLimit);
+				userService.keepLoin(map);
+				result = "redirect:/board.do";
+			}
 			result = "redirect:/board.do";
 		}
-		System.out.println(loginResult);
-		System.out.println(result);
 		return result;
 	}
 	
@@ -96,7 +119,11 @@ public class UserController {
 	public String logout(HttpSession session) throws Exception{
 		UserVO userVO = (UserVO) session.getAttribute("user");
 		userService.updateLoginHistory(userVO);
-		session.invalidate();
+		if(userVO != null) {
+			session.removeAttribute("user");
+			session.invalidate();
+		}
+		
 		
 		return "redirect:/loginView.do";
 	}
@@ -146,6 +173,12 @@ public class UserController {
 	@RequestMapping(value="/loginHistory.do")
 	public String loginHistoryList(HttpServletRequest request, Model model, HttpSession session) throws Exception{
 		logger.info("login history");
+		
+		System.out.println(" HttpServletRequest header Date : "+request.getHeader("Date"));
+		System.out.println(" HttpServletRequest header Pragma : "+request.getHeader("Pragma "));
+		System.out.println(" HttpServletRequest header Cache-Control : "+request.getHeader("Cache-Control"));
+		System.out.println(" HttpServletRequest header Content-Length : "+request.getHeader("Content-Length"));
+
 		UserVO loginUser = (UserVO) session.getAttribute("user");
 		if(loginUser == null) {
 			return "redirect:/loginView.do";
@@ -218,7 +251,23 @@ public class UserController {
 		userVo.setPassword(pwd);
 		
 		userService.selfUpdate(userVo);
-		return "redirect:/userDetail.do?userID="+userVo.getUserID();
+		return "redirect:/loginView.do";
+		//return "redirect:/userDetail.do?userID="+userVo.getUserID();
 	}
-		
+	
+	//사용자 중지
+	@RequestMapping(value = "/userActive.do")
+	public String userActive(String userID,String active,HttpSession session) throws Exception {
+		logger.info("user active");
+		if(session.getAttribute("user") == null) {
+			return "redirect:/loginView.do";
+		}else {
+			System.out.println("controller active : "+active);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("userID", userID);
+			map.put("active", active);
+			userService.ActiveUser(map);
+		}
+		return "redirect:/user.do";
+	}
 }

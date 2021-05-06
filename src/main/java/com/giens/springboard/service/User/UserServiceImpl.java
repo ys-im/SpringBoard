@@ -1,5 +1,6 @@
 package com.giens.springboard.service.User;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +94,24 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void roleUpdate(UserVO userVO) throws Exception {
 		userDAO.roleUpdate(userVO);		
+	}
+
+	@Override
+	public void keepLoin(Map<String, Object> params) throws Exception {
+		userDAO.keepLogin(params);
+		
+	}
+
+	@Override
+	public UserVO checkUserWithSessionKey(String sessionId) throws Exception {
+		 return userDAO.checkUserWithSessionKey(sessionId);
+		
+	}
+
+	@Override
+	public void ActiveUser(Map<String, String> map) throws Exception {
+		userDAO.ActiveUser(map);
+		
 	}
 
 

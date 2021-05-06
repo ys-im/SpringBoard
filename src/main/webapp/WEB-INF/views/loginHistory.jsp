@@ -64,7 +64,7 @@
 									</select> -->
 									<div class="mr-3">아이디 : </div>
 									<input type="search" id="search" class="form-control bg-light small"
-										placeholder="검색어를 입력하세요." aria-label="Search">
+										placeholder="검색어를 입력하세요." aria-label="Search"  onkeyup="enterKey();">
 									<div class="input-group-append">
 										<button type="button" class="btn btn-primary" id="searchButton">
 											<i class="fas fa-search fa-sm"></i>
@@ -321,6 +321,13 @@
 			}
 		}
 		
+		//enterKey 검색
+		function enterKey(){
+			if(window.event.keyCode == 13){
+				$('#searchButton').click();
+			}
+		}	
+
 	</script>
 </body>
 </html>
