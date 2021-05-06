@@ -57,7 +57,7 @@
 										<option value="userID">작성자</option>
 									</select> <input type="search" name="search" id="search"
 										class="form-control bg-light small" placeholder="검색어를 입력하세요."
-										aria-label="Search">
+										aria-label="Search"  onkeyup="enterKey();">
 									<div class="input-group-append">
 										<button class="btn btn-primary" id="searchButton">
 											<i class="fas fa-search fa-sm"></i>
@@ -336,6 +336,13 @@
 			}
 		}
 		
+		//enterKey 검색
+		function enterKey(){
+			if(window.event.keyCode == 13){
+				$('#searchButton').click();
+			}
+		}	
+
 	</script>
 
 </body>

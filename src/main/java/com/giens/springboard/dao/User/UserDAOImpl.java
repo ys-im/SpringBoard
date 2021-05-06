@@ -104,6 +104,23 @@ public class UserDAOImpl implements UserDAO{
 		sqlSession.update("userMapper.roleUpdate", userVO);		
 	}
 
+	@Override
+	public void keepLogin(Map<String, Object> params) throws Exception {
+		sqlSession.update("userMapper.keepLogin", params);
+	}
+
+	@Override
+	public UserVO checkUserWithSessionKey(String sessionId) throws Exception {
+		return sqlSession.selectOne("userMapper.checkUserWithSessionKey", sessionId);
+		
+	}
+
+	@Override
+	public void ActiveUser(Map<String, String> map) throws Exception {
+		sqlSession.update("userMapper.ActiveUser",map);
+		
+	}
+
 
 
 }
